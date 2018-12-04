@@ -6,13 +6,28 @@ Vue.use(Router)
 export default new Router({
   routes: [
     {
-      path: '/',
-      name: 'landing-page',
-      component: require('@/components/LandingPage').default
+      path: '/books',
+      name: 'books',
+      component: require('@/components/BooksPage').default
+    },
+    {
+      path: '/edit',
+      name: 'edit',
+      component: require('@/components/EditPage').default
+    },
+    {
+      path: '/share',
+      name: 'share',
+      component: require('@/components/SharePage').default
+    },
+    {
+      path: '/setting',
+      name: 'setting',
+      component: require('@/components/SettingPage').default
     },
     {
       path: '*',
-      redirect: '/'
+      redirect: '/books'
     }
   ]
 })
