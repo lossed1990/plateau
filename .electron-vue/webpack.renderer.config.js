@@ -18,15 +18,19 @@ const { VueLoaderPlugin } = require('vue-loader')
  * Required for specific packages like Vue UI libraries
  * that provide pure *.vue files that need compiling
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/webpack-configurations.html#white-listing-externals
+ * 
+ * 将vue模块和element-ui模块列为白名单
  */
 let whiteListedModules = ['vue','element-ui']
 
 let rendererConfig = {
+  // 指定sourcemap方式
   devtool: '#cheap-module-eval-source-map',
   entry: {
     renderer: path.join(__dirname, '../src/renderer/main.js')
   },
   externals: [
+    // 编译白名单
     ...Object.keys(dependencies || {}).filter(d => !whiteListedModules.includes(d))
   ],
   module: {
@@ -116,12 +120,14 @@ let rendererConfig = {
     ]
   },
   node: {
+    // 根据版本信息确定__dirname和__filename的行为
     __dirname: process.env.NODE_ENV !== 'production',
     __filename: process.env.NODE_ENV !== 'production'
   },
   plugins: [
     new VueLoaderPlugin(),
     new MiniCssExtractPlugin({filename: 'styles.css'}),
+    // 自动生成html首页
     new HtmlWebpackPlugin({
       filename: 'index.html',
       template: path.resolve(__dirname, '../src/index.ejs'),
@@ -134,7 +140,9 @@ let rendererConfig = {
         ? path.resolve(__dirname, '../node_modules')
         : false
     }),
+    // 热更新模块
     new webpack.HotModuleReplacementPlugin(),
+    // 在编译出现错误时，使用 NoEmitOnErrorsPlugin 来跳过输出阶段
     new webpack.NoEmitOnErrorsPlugin()
   ],
   output: {
@@ -144,11 +152,14 @@ let rendererConfig = {
   },
   resolve: {
     alias: {
+      // 在代码中使用@代表renderer目录
       '@': path.join(__dirname, '../src/renderer'),
+      // 精确指定vue特指vue.esm.js文件
       'vue$': 'vue/dist/vue.esm.js'
     },
     extensions: ['.js', '.vue', '.json', '.css', '.node']
   },
+  // 指定编译为 Electron 渲染进程
   target: 'electron-renderer'
 }
 

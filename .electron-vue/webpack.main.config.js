@@ -54,6 +54,7 @@ let mainConfig = {
   resolve: {
     extensions: ['.js', '.json', '.node']
   },
+  // 编译为electron主进程
   target: 'electron-main'
 }
 

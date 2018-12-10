@@ -9,6 +9,7 @@ const packager = require('electron-packager')
 const webpack = require('webpack')
 const Multispinner = require('multispinner')
 
+// 用到的配置文件
 const buildConfig = require('./build.config')
 const mainConfig = require('./webpack.main.config')
 const rendererConfig = require('./webpack.renderer.config')
@@ -19,6 +20,7 @@ const errorLog = chalk.bgRed.white(' ERROR ') + ' '
 const okayLog = chalk.bgBlue.white(' OKAY ') + ' '
 const isCI = process.env.CI || false
 
+// 除了‘clean’和‘web’的命令外，其他指令都会进行build()的操作
 if (process.env.BUILD_TARGET === 'clean') clean()
 else if (process.env.BUILD_TARGET === 'web') web()
 else build()
@@ -42,6 +44,7 @@ function build () {
 
   let results = ''
 
+  // 使用buildConfig（也就是build.config.js）构建app
   m.on('success', () => {
     process.stdout.write('\x1B[2J\x1B[0f')
     console.log(`\n\n${results}`)
@@ -49,6 +52,7 @@ function build () {
     bundleApp()
   })
 
+  // 使用mainConfig（也就是webpack.main.config.js）打包主进程
   pack(mainConfig).then(result => {
     results += result + '\n\n'
     m.success('main')
@@ -59,6 +63,7 @@ function build () {
     process.exit(1)
   })
 
+  // 使用rendererConfig（也就是webpack.renderer.config.js）打包渲染进程
   pack(rendererConfig).then(result => {
     results += result + '\n\n'
     m.success('renderer')

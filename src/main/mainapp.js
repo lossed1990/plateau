@@ -5,8 +5,8 @@ function MainApp () {}
 
 MainApp.prototype.loadApp = function (param) {
   const mainWnd = require('./mainwnd.js')
-  // mainWnd.createWnd('../pages/books.html');
-  mainWnd.createWnd('https://www.baidu.com/')
+  mainWnd.createWnd()
+  console.log('MainApp.prototype.loadApp')
 }
 
 module.exports = new MainApp()

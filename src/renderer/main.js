@@ -15,10 +15,24 @@ if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
+require('./scripts/init.js')
+
 /* eslint-disable no-new */
-new Vue({
+var vmApp = new Vue({
+  el: '#app',
   components: { App },
   router,
   store,
   template: '<App/>'
-}).$mount('#app')
+})
+
+window.showError = (msg) => {
+  try {
+    vmApp.$message({
+      type: 'error',
+      message: msg
+    })
+  } catch (e) {
+    alert(msg)
+  }
+}

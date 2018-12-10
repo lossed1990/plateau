@@ -40,25 +40,35 @@ function logStats(proc, data) {
 
 function startRenderer() {
     return new Promise((resolve, reject) => {
+        // 加载webpack配置文件，
+        // webpack的配置文件来自于两个文件：dev-client.js和webpack.renderer.config中entry.renderer变量，
+        // 结合output配置，这种用法的作用就是：同时把dev-client.js和main.js文件打包，输出到根目录下的/dist/electron/render.js文件中
         rendererConfig.entry.renderer = [path.join(__dirname, 'dev-client')].concat(rendererConfig.entry.renderer)
         rendererConfig.mode = 'development'
+
+        // 创建webpack
         const compiler = webpack(rendererConfig)
+        // 创建webpack-hot-middleware
         hotMiddleware = webpackHotMiddleware(compiler, {
             log: false,
             heartbeat: 2500
         })
 
+        // 编译状态监控
         compiler.hooks.compilation.tap('compilation', compilation => {
             compilation.hooks.htmlWebpackPluginAfterEmit.tapAsync('html-webpack-plugin-after-emit', (data, cb) => {
+                // 钩子函数，检测webpack的编译状态，把其中的html-webpack-plugin-after-emit状态，发布到webpackHotMiddleware中,然后通过dev-client.js模块通知页面
                 hotMiddleware.publish({ action: 'reload' })
                 cb()
             })
         })
 
         compiler.hooks.done.tap('done', stats => {
+            // 在终端屏幕上输出编译过程
             logStats('Renderer', stats)
         })
 
+        // 创建webpack-dev-server
         const server = new WebpackDevServer(
             compiler, {
                 contentBase: path.join(__dirname, '../'),
@@ -78,13 +88,17 @@ function startRenderer() {
 
 function startMain() {
     return new Promise((resolve, reject) => {
+        // 加载webpack配置文件，
+        // webpack的配置文件来自于两个文件：index.dev.js和webpack.main.config 
         mainConfig.entry.main = [path.join(__dirname, '../src/main/index.dev.js')].concat(mainConfig.entry.main)
         mainConfig.mode = 'development'
+        // 创建主进程的webpack
         const compiler = webpack(mainConfig)
 
         compiler.hooks.watchRun.tapAsync('watch-run', (compilation, done) => {
             logStats('Main', chalk.white.bold('compiling...'))
-            hotMiddleware.publish({ action: 'compiling' })
+            // 向webpack-hot-middleware发布"compiling"的消息，用于页面显示
+            // hotMiddleware.publish({ action: 'compiling' })
             done()
         })
 
@@ -97,14 +111,15 @@ function startMain() {
             logStats('Main', stats)
 
             if (electronProcess && electronProcess.kill) {
-                manualRestart = true
-                process.kill(electronProcess.pid)
-                electronProcess = null
-                startElectron()
+                // 主进程文件发生改变，重启Electron
+                // manualRestart = true
+                // process.kill(electronProcess.pid)
+                // electronProcess = null
+                // startElectron()
 
-                setTimeout(() => {
-                    manualRestart = false
-                }, 5000)
+                // setTimeout(() => {
+                //    manualRestart = false
+                // }, 5000)
             }
 
             resolve()
@@ -126,6 +141,7 @@ function startElectron() {
         args = args.concat(process.argv.slice(2))
     }
 
+    // 通过node的spawn方法运行electron，并传递了两个参数：打开5858调试端口和electron的运行目录（即当前目录）
     electronProcess = spawn(electron, args)
 
     electronProcess.stdout.on('data', data => {
@@ -157,6 +173,7 @@ function electronLog(data, color) {
     }
 }
 
+// 在终端输出一个“electron-vue”logo
 function greeting() {
     const cols = process.stdout.columns
     let text = ''
@@ -176,8 +193,10 @@ function greeting() {
 }
 
 function init() {
+    // 在终端输出一个“electron-vue”logo
     greeting()
 
+    // 启动渲染进程、主进程、Electron
     Promise.all([startRenderer(), startMain()])
         .then(() => {
             startElectron()

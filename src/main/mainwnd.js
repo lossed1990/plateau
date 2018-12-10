@@ -6,7 +6,7 @@ let mainWindow = null
 let appTray = null
 const winURL = process.env.NODE_ENV === 'development' ? `http://localhost:9080` : `file://${__dirname}/index.html`
 
-function createWnd (homeurl) {
+function createWnd () {
   const options = {
     width: 1800,
     height: 800,
@@ -17,13 +17,9 @@ function createWnd (homeurl) {
     thickFrame: false,
     autoHideMenuBar: true,
     show: false,
-    title: '',
-    webPreferences: {
-      nodeIntegrationInWorker: true
-      // preload: path.join(__dirname, '../pages/scripts/home.js')
-    }
+    title: ''
   }
-  options.icon = path.join(__dirname, '../assets/app-icon/logo.ico')
+  options.icon = path.join(__dirname, '../../build/icons/icon.ico')
   mainWindow = new BrowserWindow(options)
 
   if (process.platform !== 'darwin') {
@@ -55,21 +51,9 @@ function createWnd (homeurl) {
     mainWindow.show()
   })
 
-  mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
-    if (homeurl) {
-      params.src = 'file://' + path.join(__dirname, homeurl)
-    } else {
-      params.src = 'file://' + path.join(__dirname, '../pages/books.html')
-    }
-    // params.preload = 'file://' + path.join(__dirname, '../pages/scripts/home.js');
-    webPreferences.preloadURL = params.preload
-  })
-
-  // var html = 'file://' + path.join(__dirname, '../pages/home.html');
-  // mainWindow.loadURL(html);
   mainWindow.loadURL(winURL)
 };
 
-exports.createWnd = (homeurl) => {
-  createWnd(homeurl)
+exports.createWnd = () => {
+  createWnd()
 }

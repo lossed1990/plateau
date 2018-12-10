@@ -1,11 +1,10 @@
 'use strict'
-const _ipcMain = require('electron').ipcMain
-const _dialog = require('electron').dialog
-// const _fs = require('fs')
-const _configHelper = require('./config')
+const ipcMain = require('electron').ipcMain
+const dialog = require('electron').dialog
+const _configHelper = require('./config.js')
 
 // 公共ipc请求处理函数
-_ipcMain.on('COMMON_IPC_REQUEST', function (event, method, param, callback) {
+ipcMain.on('COMMON_IPC_REQUEST', function (event, method, param, callback) {
   switch (method) {
     case 'getWorkSpace': // 从配置文件读取当前的工作目录
       onGetWorkSpace(event, method, param, callback)
@@ -30,7 +29,7 @@ function onGetWorkSpace (event, method, param, callback) {
 }
 
 function onSelectWorkSpace (event, method, param, callback) {
-  _dialog.showOpenDialog({
+  dialog.showOpenDialog({
     properties: ['openFile', 'openDirectory']
   }, function (files) {
     try {
