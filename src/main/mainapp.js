@@ -1,5 +1,5 @@
 'use strict'
-require('./ipcmain.js')
+// require('./ipcmain.js')
 
 function MainApp () {}
 
