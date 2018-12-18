@@ -8,6 +8,7 @@ export default new Router({
     {
       path: '/books',
       name: 'books',
+      // component: require('@/components/LandingPage').default
       component: require('@/components/BooksPage').default
     },
     {

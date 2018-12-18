@@ -1,5 +1,5 @@
 'use strict'
-
+import '../renderer/store'
 const app = require('electron').app
 const path = require('path')
 
@@ -30,11 +30,11 @@ for (let i = 0; i < _argv.length; i++) {
 }
 
 // 仅运行一个实例
-const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {})
+// const isSecondInstance = app.makeSingleInstance((commandLine, workingDirectory) => {})
 
-if (isSecondInstance) {
-  app.quit()
-}
+// if (isSecondInstance) {
+//  app.quit()
+// }
 
 _theapp = require('./mainapp')
 global.g_service = _theapp

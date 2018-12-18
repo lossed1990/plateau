@@ -45,7 +45,8 @@ ConfigHelper.prototype.changeWorkspace = function (path) {
   }
 
   try {
-    _booksConfig = require(configPath)
+    var configData = _fs.readFileSync(configPath, 'utf-8')
+    _booksConfig = JSON.parse(configData)
     let workspaceInfo = { workspace: path, bookboxs: [] }
     for (let i = 0, len = _booksConfig.bookboxs.length; i < len; i++) {
       let itemBookbox = {
@@ -55,7 +56,7 @@ ConfigHelper.prototype.changeWorkspace = function (path) {
       }
       for (let j = 0, len1 = _booksConfig.bookboxs[i].books.length; j < len1; j++) {
         let itemBook = {
-          icon: '../assets/images/icon.png',
+          icon: './static/images/icon.png',
           name: _booksConfig.bookboxs[i].books[j],
           rename: false
         }
@@ -128,20 +129,6 @@ ConfigHelper.prototype.iniWorkspace = function (path) {
   }
 }
 
-ConfigHelper.prototype.updateBookData = function (param) {
-  try {
-    let paramJson = JSON.parse(param)
-    if (typeof (eval('this.' + paramJson.operation)) === 'function') {
-      let script = 'this.' + paramJson.operation + '(' + param + ')'
-      eval(script)
-      return true
-    }
-    return false
-  } catch (e) {
-    return false
-  }
-}
-
 ConfigHelper.prototype.excuteUpdateBookData = function (func, param) {
   if (_booksConfig === undefined) {
     throw new Error('_booksConfig is undefined')
@@ -172,7 +159,7 @@ ConfigHelper.prototype.addBookbox = function (param) {
       'name': param.boxName,
       'books': []
     }
-    _booksConfig.bookboxs.splice(param.box_index, 0, newValue)
+    _booksConfig.bookboxs.splice(param.boxIndex, 0, newValue)
   }, param)
 }
 
@@ -188,16 +175,13 @@ ConfigHelper.prototype.deleteBookbox = function (param) {
     let delPath = _workspace + '/' + param.boxName + '/'
     let tempPath = _workspace + '/待整理/'
     if (param.type === 0) {
-      copyFolder(delPath, tempPath, param.boxName)
-
       // 将删除的box内的书籍数据移动到代整理
-      let defaultIndex = _booksConfig.bookboxs.findIndex(function (elem) {
-        return elem.name === '待整理'
-      })
+      let defaultIndex = _booksConfig.bookboxs.length - 1
+      copyFolder(delPath, tempPath, defaultIndex)
 
       if (defaultIndex > -1) {
         let defaultBooks = _booksConfig.bookboxs[defaultIndex].books
-        let tempBooks = _booksConfig.bookboxs[param.box_index].books
+        let tempBooks = _booksConfig.bookboxs[param.boxIndex].books
         tempBooks.forEach((item) => {
           let nIndex = 1
           let newBookName = item + '(' + nIndex + ')'
@@ -215,7 +199,7 @@ ConfigHelper.prototype.deleteBookbox = function (param) {
     deleteFolder(delPath)
 
     // 更新配置文件
-    _booksConfig.bookboxs.splice(param.box_index, 1)
+    _booksConfig.bookboxs.splice(param.boxIndex, 1)
   }, param)
 }
 
@@ -227,13 +211,13 @@ ConfigHelper.prototype.deleteBookbox = function (param) {
 ConfigHelper.prototype.modifyBookbox = function (param) {
   this.excuteUpdateBookData(function (param) {
     // 修改文件夹名称
-    let boxName = _booksConfig.bookboxs[param.box_index].name
+    let boxName = _booksConfig.bookboxs[param.boxIndex].name
     let oldPath = _workspace + '/' + boxName + '/'
     let newPath = _workspace + '/' + param.boxName + '/'
     _fs.renameSync(oldPath, newPath)
 
     // 更新配置文件
-    _booksConfig.bookboxs[param.box_index].name = param.boxName
+    _booksConfig.bookboxs[param.boxIndex].name = param.boxName
   }, param)
 }
 
@@ -245,12 +229,12 @@ ConfigHelper.prototype.modifyBookbox = function (param) {
  */
 ConfigHelper.prototype.addBook = function (param) {
   this.excuteUpdateBookData(function (param) {
-    let boxName = _booksConfig.bookboxs[param.box_index].name
+    let boxName = _booksConfig.bookboxs[param.boxIndex].name
     // 新建对应的文件夹
-    _fs.mkdirSync(_workspace + '/' + boxName + '/' + param.book_name + '/')
+    _fs.mkdirSync(_workspace + '/' + boxName + '/' + param.bookName + '/')
 
     // 更新配置文件
-    _booksConfig.bookboxs[param.box_index].books.splice(param.book_index, 0, param.book_name)
+    _booksConfig.bookboxs[param.boxIndex].books.splice(param.bookIndex, 0, param.bookName)
   }, param)
 }
 
@@ -263,12 +247,12 @@ ConfigHelper.prototype.addBook = function (param) {
 ConfigHelper.prototype.deleteBook = function (param) {
   this.excuteUpdateBookData(function (param) {
     // 删除对应的文件夹
-    let boxName = _booksConfig.bookboxs[param.box_index].name
-    let delPath = _workspace + '/' + boxName + '/' + param.book_name + '/'
+    let boxName = _booksConfig.bookboxs[param.boxIndex].name
+    let delPath = _workspace + '/' + boxName + '/' + param.bookName + '/'
     deleteFolder(delPath)
 
     // 更新配置文件
-    _booksConfig.bookboxs[param.box_index].books.splice(param.book_index, 1)
+    _booksConfig.bookboxs[param.boxIndex].books.splice(param.bookIndex, 1)
   }, param)
 }
 
@@ -281,14 +265,14 @@ ConfigHelper.prototype.deleteBook = function (param) {
 ConfigHelper.prototype.modifyBook = function (param) {
   this.excuteUpdateBookData(function (param) {
     // 修改文件夹名称
-    let boxName = _booksConfig.bookboxs[param.box_index].name
-    let oldName = _booksConfig.bookboxs[param.box_index].books[param.book_index]
+    let boxName = _booksConfig.bookboxs[param.boxIndex].name
+    let oldName = _booksConfig.bookboxs[param.boxIndex].books[param.bookIndex]
     let oldPath = _workspace + '/' + boxName + '/' + oldName + '/'
-    let newPath = _workspace + '/' + boxName + '/' + param.book_name + '/'
+    let newPath = _workspace + '/' + boxName + '/' + param.bookName + '/'
     _fs.renameSync(oldPath, newPath)
 
     // 更新配置文件
-    _booksConfig.bookboxs[param.box_index].books.splice(param.book_index, 1, param.book_name)
+    _booksConfig.bookboxs[param.boxIndex].books.splice(param.bookIndex, 1, param.bookName)
   }, param)
 }
 
@@ -317,7 +301,7 @@ function deleteFolder (delPath) {
   }
 }
 
-function copyFolder (src, dst, pre) {
+function copyFolder (src, dst, index) {
   if (!_fs.existsSync(src)) {
     return
   }
@@ -328,16 +312,26 @@ function copyFolder (src, dst, pre) {
 
   let files = []
   files = _fs.readdirSync(src)
-  files.forEach(function (file, index) {
-    var _src = src + '/' + file
-    var _dst = dst + '/' + file
+  files.forEach(function (file) {
+    let tempSrc = src + '/' + file
+    let tempDst = dst + '/' + file
 
-    if (_fs.statSync(_src).isDirectory()) {
-      _dst = _dst + '(' + pre + ')'
-      copyFolder(_src, _dst, pre)
+    if (_fs.statSync(tempSrc).isDirectory()) {
+      let nIndex = 1
+      let tempFileName = `${file}(${nIndex})`
+      while (isExistBook(index, tempFileName)) {
+        ++nIndex
+        tempFileName = `${file}(${nIndex})`
+      }
+
+      tempDst = dst + '/' + tempFileName
+      if (_fs.existsSync(tempDst)) {
+        throw new Error('tempDst is exist, config file may be modify by user')
+      }
+      copyFolder(tempSrc, tempDst, index)
     } else {
-      let readable = _fs.createReadStream(_src)
-      let writable = _fs.createWriteStream(_dst)
+      let readable = _fs.createReadStream(tempSrc)
+      let writable = _fs.createWriteStream(tempDst)
       readable.pipe(writable)
     }
   })

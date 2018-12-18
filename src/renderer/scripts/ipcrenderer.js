@@ -20,6 +20,7 @@ export default function initIpc (ipcRenderer) {
   }
 
   // 公共ipc请求反馈函数
+  /* eslint-disable */
   ipcRenderer.on('COMMON_IPC_RESPONE', function (event, method, errCode, callback, response) {
     try {
       if (typeof errCode === 'undefined') {
@@ -32,7 +33,7 @@ export default function initIpc (ipcRenderer) {
           var data = JSON.stringify(response)
           let script = callback + '(' + data + ')'
           console.log('ipc response>>begin eval(' + script + ')')
-          // eval(script)
+          eval(script)
         }
       }
     } catch (e) {
