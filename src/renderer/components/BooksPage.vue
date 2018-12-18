@@ -1,6 +1,6 @@
 <template>
   <div id="books">
-    <div v-if="workspace === ''" class="gy-workspace-set">
+    <div v-if="workspace === ''" class="gy-selectworkspace-div">
       <el-button type="primary" icon="el-icon-document" @click="onSelectWorkSpace">选择工作目录</el-button>
       <p>良好的文档管理，从设置工作目录开始~</p>
     </div>
@@ -16,11 +16,11 @@
   var ComponentBookList = {
     props: ['bookinfo', 'bookindex'],
     template: `
-      <div class="book-item">
+      <div class="gy-bookinfo-div">
         <el-button v-if="bookinfo.name !== '新增书籍'" @click="$emit('delete-book', bookinfo.name, bookindex)" type="danger" icon="el-icon-delete" size="mini" circle></el-button>
         <img :src="bookinfo.icon" @click="$emit('click-book', bookinfo.name, bookindex)">
-        <input v-if="bookinfo.name !== '新增书籍'" type="text" class="book-name" :readonly="bookinfo.rename ? false : 'readonly'" :unselectable="bookinfo.rename ? false : 'on'" :onfocus="bookinfo.rename ? '' : 'this.blur()'"  @dblclick="$emit('dbclick-bookname', bookindex)" @blur="$emit('blur-bookname', bookinfo.name, bookindex , $event)" :value="bookinfo.name"/>
-        <input v-else type="text" class="book-name" readonly='readonly' unselectable='on' onfocus='this.blur()' :value="bookinfo.name" />
+        <input v-if="bookinfo.name !== '新增书籍'" type="text" class="gy-bookname-input" :readonly="bookinfo.rename ? false : 'readonly'" :unselectable="bookinfo.rename ? false : 'on'" :onfocus="bookinfo.rename ? '' : 'this.blur()'"  @dblclick="$emit('dbclick-bookname', bookindex)" @blur="$emit('blur-bookname', bookinfo.name, bookindex , $event)" :value="bookinfo.name"/>
+        <input v-else type="text" class="gy-bookname-input" readonly='readonly' unselectable='on' onfocus='this.blur()' :value="bookinfo.name" />
       </div>
     `
   }
@@ -28,10 +28,10 @@
   var ComponentBookBox = {
     props: ['bookbox', 'boxindex'],
     template: `
-      <div class="book-box">
-        <div class="book-box-topbar">
+      <div class="gy-bookbox-div">
+        <div class="gy-bookbox-topbar">
           <span class="el-icon-menu"></span>
-          <input type="text" class="box-name" :value="bookbox.name" :readonly="bookbox.rename ? false : 'readonly'" :unselectable="bookbox.rename ? false : 'on'" :onfocus="bookbox.rename ? '' : 'this.blur()'" @dblclick="$emit('dbclick-boxname', boxindex)" @blur="$emit('blur-boxname', bookbox.name, boxindex , $event)" />
+          <input type="text" class="gy-boxname-input" :value="bookbox.name" :readonly="bookbox.rename ? false : 'readonly'" :unselectable="bookbox.rename ? false : 'on'" :onfocus="bookbox.rename ? '' : 'this.blur()'" @dblclick="$emit('dbclick-boxname', boxindex)" @blur="$emit('blur-boxname', bookbox.name, boxindex , $event)" />
           <el-button v-if="bookbox.name !== '待整理'" type="info" plain icon="el-icon-delete" size="mini" @click="$emit('delete-box', boxindex, bookbox.name)">删除</el-button>
           <el-button type="info" plain icon="el-icon-plus" size="mini" @click="$emit('add-box', boxindex)">新增</el-button>
         </div>
@@ -357,7 +357,7 @@
     width: 100%;
   }
 
-  .gy-workspace-set {
+  .gy-selectworkspace-div {
     position: fixed;
     margin: auto;
     left: 0;
@@ -369,31 +369,31 @@
     text-align: center;
   }
 
-  .gy-workspace-set .el-button {
+  .gy-selectworkspace-div .el-button {
     font-size: 22px;
   }
   
-  .gy-workspace-set p {
+  .gy-selectworkspace-div p {
     font-size: 13px;
     color: #C0C4CC;
   }
 
-  .book-box,
-  .box-name {
+  .gy-bookbox-div,
+  .gy-boxname-input {
     font-size: 22px;
   }
         
-  .book-box-topbar {
+  .gy-bookbox-topbar {
     background-color: rgb(235, 238, 240);
     width: 100%;
   }
         
-  .book-box-topbar .el-button {
+  .gy-bookbox-topbar .el-button {
     float: right;
     margin-left: 4px;
   }
         
-  .book-item {
+  .gy-bookinfo-div {
     border: 1px solid #FFF;
     display: inline-block;
     margin: 8px;
@@ -402,23 +402,23 @@
     position: relative;
   }
   
-  .book-item:hover {
+  .gy-bookinfo-div:hover {
     border: 1px solid rgb(235, 238, 240);
     cursor: pointer;
   }
   
-  .book-item img {
+  .gy-bookinfo-div img {
     width: 80px;
     height: 80px;
   }
   
-  .book-item .el-button {
+  .gy-bookinfo-div .el-button {
     position: absolute;
     right: 0px;
     top: 0px;
   }
   
-  .book-name {
+  .gy-bookname-input {
     width: 76px;
     text-align: center;
     white-space: nowrap;
@@ -426,15 +426,15 @@
     overflow: hidden;
   }
   
-  .box-name[readonly],
-  .book-name[readonly] {
+  .gy-boxname-input[readonly],
+  .gy-bookname-input[readonly] {
     border: 0px;
     outline: none;
     cursor: pointer;
     user-select: none;
   }
   
-  .box-name[readonly] {
+  .gy-boxname-input[readonly] {
     background-color: rgb(235, 238, 240);
   }
   
