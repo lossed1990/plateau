@@ -11,7 +11,7 @@
 
 <script>
   import { mapState } from 'vuex'
-  const _configHelper = require('../../main/config.js')
+  const _configHelper = require('../scripts/bookmanager.js')
 
   var ComponentBookList = {
     props: ['bookinfo', 'bookindex'],

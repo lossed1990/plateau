@@ -1,5 +1,5 @@
 'use strict'
-var _config = require('../config/config.json')
+var _config = require('../../config/config.json')
 const _path = require('path')
 const _fs = require('fs')
 
@@ -81,7 +81,7 @@ ConfigHelper.prototype.saveWorkspace = function (path) {
     this.iniWorkspace(path)
   }
 
-  let configPath = _path.join(__dirname, '../config/config.json')
+  let configPath = _path.join(__dirname, '../../config/config.json')
   _config.workspace = path
   _workspace = path
   _fs.writeFileSync(configPath, JSON.stringify(_config))
