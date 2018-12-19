@@ -1,5 +1,5 @@
 <template>
-  <div id="books">
+  <div id="gy_books">
     <div v-if="workspace === ''" class="gy-selectworkspace-div">
       <el-button type="primary" icon="el-icon-document" @click="onSelectWorkSpace">选择工作目录</el-button>
       <p>良好的文档管理，从设置工作目录开始~</p>
@@ -346,13 +346,13 @@
       }
     },
     computed: mapState({
-      workspace: state => state.Data.workspacePath
+      workspace: state => state.DataStore.workspacePath
     })
   }
 </script>
 
 <style>
-  #books {
+  #gy_books {
     float: left;
     width: 100%;
   }

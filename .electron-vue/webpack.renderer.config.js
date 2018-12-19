@@ -21,7 +21,7 @@ const { VueLoaderPlugin } = require('vue-loader')
  * 
  * 将vue模块和element-ui模块列为白名单
  */
-let whiteListedModules = ['vue','element-ui']
+let whiteListedModules = ['vue','element-ui','vue-codemirror']
 
 let rendererConfig = {
   // 指定sourcemap方式

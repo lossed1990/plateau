@@ -1,6 +1,6 @@
 <template>
   <el-container id="app">
-    <el-aside class="gy-toolbar" width="66px">
+    <el-aside class="gy-toolbar" v-bind:style="{ 'width': leftToolBarWidth + 'px' }">
       <div class="gy-toolbar-top">
         <el-tooltip class="item" effect="dark" content="书架" placement="right">
           <el-button type="primary" icon="el-icon-menu gy-toolbtn" circle @click="showPage('books')"></el-button>
@@ -34,8 +34,18 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex'
+
   export default {
     name: 'plateau',
+    computed: mapState({
+      leftToolBarWidth: state => state.UIStore.leftToolBarWidth,
+      headerHeight: state => state.UIStore.headerHeight
+    }),
+    created: function () {
+      // 初始化UI尺寸、布局等，后期考虑统一配置
+      this.$store.dispatch('setLeftToolBarWidth', 66)
+    },
     methods: {
       minimizeWindow () {
         console.log('onMinimize')

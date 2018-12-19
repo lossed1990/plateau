@@ -2,14 +2,17 @@ import Vue from 'vue'
 import axios from 'axios'
 
 import Element from 'element-ui'
+import VueCodeMirror from 'vue-codemirror'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/icon/iconfont.css'
+import 'vue-codemirror/node_modules/codemirror/lib/codemirror.css'
 
 import App from './App'
 import router from './router'
 import store from './store'
 
 Vue.use(Element)
+Vue.use(VueCodeMirror)
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
