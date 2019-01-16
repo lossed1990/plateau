@@ -185,7 +185,7 @@ ConfigHelper.prototype.deleteBookbox = function (param) {
         tempBooks.forEach((item) => {
           let nIndex = 1
           let newBookName = item + '(' + nIndex + ')'
-          while (isExistBook(defaultIndex, newBookName)) {
+          while (_booksConfig.bookboxs[defaultIndex].books.findIndex((item) => item === newBookName) !== -1) {
             ++nIndex
             newBookName = item + '(' + nIndex + ')'
           }
@@ -276,19 +276,76 @@ ConfigHelper.prototype.modifyBook = function (param) {
   }, param)
 }
 
-function isExistBook (boxindex, bookname) {
-  for (let i = 0; i < _booksConfig.bookboxs[boxindex].books.length; i++) {
-    if (_booksConfig.bookboxs[boxindex].books[i] === bookname) {
-      return true
+/**
+ * 遍历文件夹中的md文件
+ * @param {String} path
+ */
+ConfigHelper.prototype.selectMdFiles = function (path) {
+  try {
+    if (_workspace === '') {
+      throw new Error('_workspace is no initialization')
     }
+
+    let mdFiles = []
+    let folderPath = _workspace + '/' + path
+    let files = _fs.readdirSync(folderPath)
+    files.forEach(function (ele) {
+      let info = _fs.statSync(folderPath + '/' + ele)
+      if (!info.isDirectory()) {
+        console.log('file: ' + ele)
+        let fileItem = {name: ele}
+        mdFiles.push(fileItem)
+      }
+    })
+    return mdFiles
+  } catch (e) {
+    console.error('selectMdFiles failed', e)
   }
-  return false
 }
 
+ConfigHelper.prototype.createMdFile = function (path, name) {
+  try {
+    if (_workspace === '') {
+      throw new Error('_workspace is no initialization')
+    }
+
+    let filePath = _workspace + '/' + path + '/' + name
+    _fs.writeFileSync(filePath, '')
+    return true
+  } catch (e) {
+    console.error('createMdFile failed', e)
+    return false
+  }
+}
+
+ConfigHelper.prototype.modifyMdFileName = function (path, oldName, newName) {
+  try {
+    if (_workspace === '') {
+      throw new Error('_workspace is no initialization')
+    }
+
+    let oldFilePath = _workspace + '/' + path + '/' + oldName
+    let newFilePath = _workspace + '/' + path + '/' + newName
+    _fs.renameSync(oldFilePath, newFilePath)
+    return true
+  } catch (e) {
+    console.error('modifyMdFileName failed', e)
+    return false
+  }
+}
+
+// function isExistBook (boxindex, bookname) {
+//   for (let i = 0; i < _booksConfig.bookboxs[boxindex].books.length; i++) {
+//     if (_booksConfig.bookboxs[boxindex].books[i] === bookname) {
+//       return true
+//     }
+//   }
+//   return false
+// }
+
 function deleteFolder (delPath) {
-  let files = []
   if (_fs.existsSync(delPath)) {
-    files = _fs.readdirSync(delPath)
+    let files = _fs.readdirSync(delPath)
     files.forEach(function (file, index) {
       var curPath = delPath + '/' + file
       if (_fs.statSync(curPath).isDirectory()) {
@@ -310,8 +367,7 @@ function copyFolder (src, dst, index) {
     _fs.mkdirSync(dst)
   }
 
-  let files = []
-  files = _fs.readdirSync(src)
+  let files = _fs.readdirSync(src)
   files.forEach(function (file) {
     let tempSrc = src + '/' + file
     let tempDst = dst + '/' + file
@@ -319,7 +375,7 @@ function copyFolder (src, dst, index) {
     if (_fs.statSync(tempSrc).isDirectory()) {
       let nIndex = 1
       let tempFileName = `${file}(${nIndex})`
-      while (isExistBook(index, tempFileName)) {
+      while (_booksConfig.bookboxs[index].books.findIndex((item) => item === tempFileName) !== -1) {
         ++nIndex
         tempFileName = `${file}(${nIndex})`
       }

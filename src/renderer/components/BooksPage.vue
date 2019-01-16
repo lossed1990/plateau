@@ -242,7 +242,10 @@
       },
       onBookClick (boxindex, bookname, bookindex) {
         if (bookname !== '新增书籍') {
-          alert(bookname)
+          let bookPath = `${this.bookboxs[boxindex].name}/${bookname}`
+          this.$store.dispatch('setCurrentSelectBookName', bookname)
+          this.$store.dispatch('setCurrentSelectBookPath', bookPath)
+          this.$router.replace('edit')
         } else {
           let nIndex = 1
           let newBookName = `新书籍${nIndex}`
