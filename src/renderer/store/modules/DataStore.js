@@ -1,8 +1,8 @@
 const state = {
   workspacePath: '',
   currentSelectBook: {
-    name: 'ceshi1',
-    path: '1231'
+    name: '',
+    path: ''
   }
 }
 

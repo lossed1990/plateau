@@ -1,7 +1,7 @@
 <template>
   <div id="gy_edit">
     <div class="gy-leftcontainer-div" :style="{ width: leftListBarWidth + 'px' }">
-      <gy-sidebar>
+      <gy-sidebar ref="sidebar" @show-menu="onShowMenu">
       </gy-sidebar>
     </div>
     <div class="gy-middlesplit-div" v-bind:style="{ left: splitLeft + 'px' }" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>
@@ -12,12 +12,14 @@
         :options="editorOptions"
       />
     </div>
+    <gy-menu :menus="rightmenus" @click-menu="onClickMenu"></gy-menu>
   </div>
 </template>
 
 <script>
   import editorOptions from '@/scripts/editor.js'
   import { mapState } from 'vuex'
+  import ComponentMenu from './common/Menu'
 
   const _configHelper = require('../scripts/bookmanager.js')
 
@@ -46,7 +48,7 @@
             <button class="el-icon-plus gy-addfile-btn" title="新建文件" @click="onAddFile()"></button>
           </div>
           <div v-for="(file, index) in files" :key="file.name">
-            <div class="gy-filename-div" :class="{ 'gy-filename-div-active': fileindex === index }" :index=index @click="onClickFileName(index)">
+            <div class="gy-filename-div" :class="{ 'gy-filename-div-active': fileindex === index }" :index=index @click="onClickFileName(index)" @contextmenu="onShowMenu(index, $event)">
               <span class="el-icon-document"></span>
               <input type="text" class="gy-filename-input" :value="file.name" :readonly="file.rename ? false : 'readonly'" :unselectable="file.rename ? false : 'on'" @dblclick="onDbclickFilename(index)" @blur="onBlueFilename(file.name, index , $event)"/>
             </div>
@@ -61,8 +63,14 @@
       return {
         name: 'files',
         fileindex: 0,
-        files: [{ name: '123', rename: false }, { name: '1231', rename: false }]
+        files: [] // [{ name: '123', rename: false }, { name: '1231', rename: false }]
       }
+    },
+    created: function () {
+      console.log('created', this.currentSelectBookName)
+      console.log('created', this.currentSelectBookPath)
+      let mdFiles = _configHelper.selectMdFiles(this.currentSelectBookPath)
+      this.files.splice(0, this.files.length, ...mdFiles)
     },
     watch: {
       currentSelectBookPath: function (data) {
@@ -77,6 +85,26 @@
       },
       onClickFileName: function (index) {
         this.fileindex = index
+      },
+      onShowMenu: function (index, event) {
+        this.$emit('show-menu', index, event)
+      },
+      onClickMenu: function (name, userdata) {
+        console.log('onClickMenu 删除文件', name, userdata)
+        switch (name) {
+          case '打开':
+            break
+          case '删除':
+            if (_configHelper.deleteMdFile(this.currentSelectBookPath, this.files[userdata].name)) {
+              this.files.splice(userdata, 1)
+            } else {
+              window.showError('文件删除失败！')
+            }
+            break
+          case '重命名':
+            this.onDbclickFilename(userdata)
+            break
+        }
       },
       onAddFile: function () {
         let nIndex = 1
@@ -124,11 +152,13 @@
       return {
         leftListBarWidth: 200,
         code: '',
-        editorOptions
+        editorOptions,
+        rightmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1}
       }
     },
     components: {
-      'gy-sidebar': ComponentSideBar
+      'gy-sidebar': ComponentSideBar,
+      'gy-menu': ComponentMenu
     },
     created: function () {
       // console.log(this.currentSelectBook.path)
@@ -164,6 +194,20 @@
         // console.log('onMouseUp')
         event.target.releasePointerCapture(event.pointerId)
         event.target.onpointermove = null
+      },
+      onShowMenu: function (index, event) {
+        let menuInfo = {
+          left: event.clientX,
+          top: event.clientY,
+          items: ['打开', '', '删除', '重命名'],
+          userdata: index,
+          visible: true
+        }
+        this.rightmenus = menuInfo
+      },
+      onClickMenu: function (name, userdata) {
+        this.rightmenus = {visible: false}
+        this.$refs.sidebar.onClickMenu(name, userdata)
       }
     }
   }
@@ -250,6 +294,12 @@
   .gy-filename-div-active,
   .gy-filename-div-active .gy-filename-input{
     background-color: rgb(238,238,238);
+  }
+
+  .gy-filename-div:hover,
+  .gy-filename-div:hover .gy-filename-input
+   {
+    background-color: rgb(248,248,248);
   }
 
   .gy-filename-input {

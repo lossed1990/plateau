@@ -282,9 +282,7 @@ ConfigHelper.prototype.modifyBook = function (param) {
  */
 ConfigHelper.prototype.selectMdFiles = function (path) {
   try {
-    if (_workspace === '') {
-      throw new Error('_workspace is no initialization')
-    }
+    this.checkWorkSpace()
 
     let mdFiles = []
     let folderPath = _workspace + '/' + path
@@ -305,9 +303,7 @@ ConfigHelper.prototype.selectMdFiles = function (path) {
 
 ConfigHelper.prototype.createMdFile = function (path, name) {
   try {
-    if (_workspace === '') {
-      throw new Error('_workspace is no initialization')
-    }
+    this.checkWorkSpace()
 
     let filePath = _workspace + '/' + path + '/' + name
     _fs.writeFileSync(filePath, '')
@@ -320,16 +316,28 @@ ConfigHelper.prototype.createMdFile = function (path, name) {
 
 ConfigHelper.prototype.modifyMdFileName = function (path, oldName, newName) {
   try {
-    if (_workspace === '') {
-      throw new Error('_workspace is no initialization')
-    }
+    this.checkWorkSpace()
 
     let oldFilePath = _workspace + '/' + path + '/' + oldName
     let newFilePath = _workspace + '/' + path + '/' + newName
     _fs.renameSync(oldFilePath, newFilePath)
     return true
   } catch (e) {
-    console.error('modifyMdFileName failed', e)
+    let errStr = `modifyMdFileName failed>>path:${path};oldName:${oldName};newName:${newName};workspace:${_workspace}`
+    console.error(errStr, e)
+    return false
+  }
+}
+
+ConfigHelper.prototype.deleteMdFile = function (path, name) {
+  try {
+    this.checkWorkSpace()
+
+    let filePath = _workspace + '/' + path + '/' + name
+    _fs.unlinkSync(filePath)
+    return true
+  } catch (e) {
+    console.error('deleteMdFile failed', e)
     return false
   }
 }
@@ -342,6 +350,15 @@ ConfigHelper.prototype.modifyMdFileName = function (path, oldName, newName) {
 //   }
 //   return false
 // }
+
+ConfigHelper.prototype.checkWorkSpace = function () {
+  if (_workspace === '') {
+    this.getWorkspace()
+    if (_workspace === '') {
+      throw new Error('_workspace is no initialization')
+    }
+  }
+}
 
 function deleteFolder (delPath) {
   if (_fs.existsSync(delPath)) {
