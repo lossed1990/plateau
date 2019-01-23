@@ -1,11 +1,11 @@
 <template>
-  <div id="gy_edit">
-    <div class="gy-leftcontainer-div" :style="{ width: leftListBarWidth + 'px' }">
-      <gy-sidebar ref="sidebar" @show-menu="onShowMenu">
+  <div id="gy_edit" @keyup.ctrl.83="onSave">
+    <div v-if=showFileListBar class="gy-leftcontainer-div" :style="{ width: fileListBarWidth + 'px' }">
+      <gy-sidebar ref="sidebar" :barwidth=fileListBarWidth @show-menu="onShowMenu">
       </gy-sidebar>
     </div>
-    <div class="gy-middlesplit-div" v-bind:style="{ left: splitLeft + 'px' }" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>
-    <div class="gy-rightcontainer-div" v-bind:style="{ 'margin-left': splitRight + 'px' }">
+    <div v-if=showFileListBar class="gy-middlesplit-div" v-bind:style="{ left: splitLeft + 'px' }" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>
+    <div class="gy-rightcontainer-div" v-bind:style="{ 'margin-left': showFileListBar ? splitRight + 'px' : '0px' }">
       <codemirror
         ref="editor"
         :code="code"
@@ -25,7 +25,7 @@
 
   // 左侧工具栏（文件、大纲）
   var ComponentSideBar = {
-    props: [],
+    props: ['barwidth'],
     template: `
       <div class="gy-sidebar-div">
         <div class="gy-sidebartab-div">
@@ -42,15 +42,17 @@
           <div style="flex:1"></div>
         </div>
         <div v-if="name === 'files'" class="gy-sidebarpanel-div">
-          <div class="gy-filestop-div">
-            <span class="el-icon-document"></span>
-            <input type="text" class="gy-filename-input" readonly='readonly' unselectable='on' :value="currentSelectBookName"/>
+          <div class="gy-files-top-div">
+            <span class="fa fa-folder"></span>
+            <input type="text" readonly='readonly' unselectable='on' :value="currentSelectBookName" :title="currentSelectBookName"/>
             <button class="el-icon-plus gy-addfile-btn" title="新建文件" @click="onAddFile()"></button>
           </div>
-          <div v-for="(file, index) in files" :key="file.name">
-            <div class="gy-filename-div" :class="{ 'gy-filename-div-active': fileindex === index }" :index=index @click="onClickFileName(index)" @contextmenu="onShowMenu(index, $event)">
-              <span class="el-icon-document"></span>
-              <input type="text" class="gy-filename-input" :value="file.name" :readonly="file.rename ? false : 'readonly'" :unselectable="file.rename ? false : 'on'" @dblclick="onDbclickFilename(index)" @blur="onBlueFilename(file.name, index , $event)"/>
+          <div class="gy-files-list-div" :style="{ width: barwidth + 'px' }">
+            <div v-for="(file, index) in files" :key="file.name">
+              <div class="gy-filename-div" :class="{ 'gy-filename-div-active': fileindex === index }" :index=index @click="onClickFileName(index)" @contextmenu="onShowMenu(index, $event)">
+                <span class="fa fa-file-text-o"></span>
+                <input type="text" class="gy-filename-input" :value="file.name" :readonly="file.rename ? false : 'readonly'" :unselectable="file.rename ? false : 'on'" @dblclick="onDbclickFilename(index)" @blur="onBlueFilename(file.name, index , $event)"/>
+              </div>
             </div>
           </div>
         </div>
@@ -85,6 +87,7 @@
       },
       onClickFileName: function (index) {
         this.fileindex = index
+        this.$store.dispatch('setCurrentSelectBookFile', this.files[index].name)
       },
       onShowMenu: function (index, event) {
         this.$emit('show-menu', index, event)
@@ -93,6 +96,7 @@
         console.log('onClickMenu 删除文件', name, userdata)
         switch (name) {
           case '打开':
+            this.onClickFileName(userdata)
             break
           case '删除':
             if (_configHelper.deleteMdFile(this.currentSelectBookPath, this.files[userdata].name)) {
@@ -150,8 +154,8 @@
   export default {
     data: function () {
       return {
-        leftListBarWidth: 200,
-        code: '',
+        fileListBarWidth: 200,
+        code: 'dsasdfds',
         editorOptions,
         rightmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1}
       }
@@ -162,31 +166,46 @@
     },
     created: function () {
       // console.log(this.currentSelectBook.path)
+      console.log(this)
+      this.$store.dispatch('showStatusBar', true)
+      this.$store.dispatch('showFileListBar', true)
+      this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
+    },
+    watch: {
+      currentSelectBookFile: function (data) {
+        this.openFile(data)
+      }
     },
     computed: {
       splitLeft () {
-        return this.leftListBarWidth + this.leftToolBarWidth
+        return this.fileListBarWidth + this.leftToolBarWidth
       },
       splitRight () {
         return this.splitLeft + 4 - this.leftToolBarWidth
       },
       ...mapState({
-        leftToolBarWidth: state => state.UIStore.leftToolBarWidth
+        leftToolBarWidth: state => state.UIStore.leftToolBarWidth,
+        showFileListBar: state => state.UIStore.showFileListBar,
+        // currentSelectBookName: state => state.DataStore.currentSelectBook.name,
+        currentSelectBookPath: state => state.DataStore.currentSelectBook.path,
+        currentSelectBookFile: state => state.DataStore.currentSelectBook.file
       })
     },
     methods: {
       onMouseDown: function (event) {
-        let dx = this.leftListBarWidth - event.clientX
+        let dx = this.fileListBarWidth - event.clientX
         event.target.setPointerCapture(event.pointerId)
         event.target.onpointermove = (ev) => {
-          this.leftListBarWidth = ev.clientX + dx
-          if (this.leftListBarWidth < 100) {
-            this.leftListBarWidth = 100
+          this.fileListBarWidth = ev.clientX + dx
+          if (this.fileListBarWidth < 100) {
+            this.fileListBarWidth = 100
           }
 
-          if (this.leftListBarWidth > 500) {
-            this.leftListBarWidth = 500
+          if (this.fileListBarWidth > 500) {
+            this.fileListBarWidth = 500
           }
+
+          this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
           // console.log('onMouseMove>>w:' + this.leftListBarWidth)
         }
       },
@@ -208,6 +227,33 @@
       onClickMenu: function (name, userdata) {
         this.rightmenus = {visible: false}
         this.$refs.sidebar.onClickMenu(name, userdata)
+      },
+      onSave: function () {
+        console.log('onSave')
+        const self = this
+        console.log('save file:', self.currentSelectBookPath + '/' + self.currentSelectBookFile)
+        console.log('save file content:', self.code)
+        _configHelper.writeMdFile(self.currentSelectBookPath, self.currentSelectBookFile, self.code, function (err) {
+          if (err !== null) {
+            window.showError(`文件[${self.currentSelectBookFile}]写入失败！`)
+          } else {
+            window.showSuccess(`文件[${self.currentSelectBookFile}]保存成功！`)
+          }
+        })
+      },
+      openFile: function (name) {
+        const self = this
+        // todo:保存现有编辑文件，或者提示
+
+        console.log('open file:', self.currentSelectBookPath + '/' + name)
+        _configHelper.readMdFile(self.currentSelectBookPath, name, function (err, content) {
+          if (err === null) {
+            self.code = `${content}`
+            console.log('open file result:', content)
+          } else {
+            window.showError(`文件[${name}]读取失败！`)
+          }
+        })
       }
     }
   }
@@ -221,7 +267,7 @@
 
   .gy-leftcontainer-div {
     width: 196px;
-    height: calc(100vh - 84px);
+    height: calc(100vh - 52px);
     /* background: tomato; */
     overflow-y: auto;
     position: fixed;
@@ -232,7 +278,7 @@
     left: 196px;
     border-left: 1px solid #EDEDED;
     width: 3px;
-    height: calc(100vh - 84px);
+    height: calc(100vh - 52px);
     position: fixed;
     cursor: w-resize;
   }
@@ -241,6 +287,14 @@
     margin-left: 200px;
     background-color: greenyellow;
   }
+
+  /* 
+  .gy-rightcontainer-div footer {
+    position:fixed;
+    bottom:0px;
+    width:100%;
+    height:50px;
+  } */
 
   .gy-sidebartab-div {
     /* display: block; */
@@ -276,19 +330,40 @@
     background-color: black;
   }
 
-  .gy-filestop-div {
+  .gy-files-top-div {
     padding: 5px 2px 5px 2px;
     white-space: nowrap;
+    color: rgb(119, 119, 119)
   }
 
-  .gy-filestop-div span{
-    /* font-size: 12px;
-    font-weight: bold; */
+  .gy-files-list-div {
+    width: 196px;
+    height: calc(100vh - 142px);
+    /*background: tomato;*/
+    overflow-y: auto;
+    position: fixed;
+  }
+
+  .gy-files-top-div input{
+    width: calc(100% - 52px);
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border: 0px;
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px;
+    border: 0px;
+    outline: none;
+    cursor: default;
+    user-select: none;
   }
   
   .gy-filename-div {
     padding: 5px 10px 5px 10px;
     white-space: nowrap;
+    color: rgb(119, 119, 119);
+    font-size: 14px;
   }
 
   .gy-filename-div-active,
@@ -303,7 +378,7 @@
   }
 
   .gy-filename-input {
-    width: calc(100% - 60px);
+    width: calc(100% - 6px);
     text-align: left;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -323,7 +398,7 @@
   .gy-addfile-btn {
     width: 30px;
     height:26px;
-    margin-right: 6px;
+    margin-right: 0px;
     background-color: white;
     border: none;
     outline:none;

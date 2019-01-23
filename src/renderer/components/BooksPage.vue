@@ -30,7 +30,7 @@
     template: `
       <div class="gy-bookbox-div">
         <div class="gy-bookbox-topbar">
-          <span class="el-icon-menu"></span>
+          <span class="fa fa-book"></span>
           <input type="text" class="gy-boxname-input" :value="bookbox.name" :readonly="bookbox.rename ? false : 'readonly'" :unselectable="bookbox.rename ? false : 'on'" :onfocus="bookbox.rename ? '' : 'this.blur()'" @dblclick="$emit('dbclick-boxname', boxindex)" @blur="$emit('blur-boxname', bookbox.name, boxindex , $event)" />
           <el-button v-if="bookbox.name !== '待整理'" type="info" plain icon="el-icon-delete" size="mini" @click="$emit('delete-box', boxindex, bookbox.name)">删除</el-button>
           <el-button type="info" plain icon="el-icon-plus" size="mini" @click="$emit('add-box', boxindex)">新增</el-button>
@@ -72,6 +72,7 @@
       let response = _configHelper.getWorkspace()
       console.log('BooksPage.vue created >> getWorkspace', response)
       this.setWorkspacePath(response)
+      this.$store.dispatch('showStatusBar', false)
     },
     methods: {
       setWorkspacePath (response) {
@@ -389,6 +390,10 @@
   .gy-bookbox-topbar {
     background-color: rgb(235, 238, 240);
     width: 100%;
+  }
+
+  .gy-bookbox-topbar span{
+    margin-left: 6px;
   }
         
   .gy-bookbox-topbar .el-button {

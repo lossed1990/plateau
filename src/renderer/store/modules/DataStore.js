@@ -2,7 +2,8 @@ const state = {
   workspacePath: '',
   currentSelectBook: {
     name: '',
-    path: ''
+    path: '',
+    file: ''
   }
 }
 
@@ -14,10 +15,16 @@ const mutations = {
     state.workspacePath = path
   },
   SET_CURRENTSELECTBOOK_NAME (state, name) {
+    // 当前选择书籍名称
     state.currentSelectBook.name = name
   },
   SET_CURRENTSELECTBOOK_PATH (state, path) {
+    // 当前选择书籍路径
     state.currentSelectBook.path = path
+  },
+  SET_CURRENTSELECTBOOK_FILE (state, file) {
+    // 当前编辑的文件名称
+    state.currentSelectBook.file = file
   }
 }
 
@@ -30,6 +37,9 @@ const actions = {
   },
   setCurrentSelectBookPath ({ commit }, path) {
     commit('SET_CURRENTSELECTBOOK_PATH', path)
+  },
+  setCurrentSelectBookFile ({ commit }, file) {
+    commit('SET_CURRENTSELECTBOOK_FILE', file)
   }
 }
 

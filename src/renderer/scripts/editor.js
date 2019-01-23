@@ -27,7 +27,7 @@ export default {
   autoCloseTags: true,
   showCursorWhenSelecting: true,
   inputStyle: 'textarea',
-  // lineNumbers: true,  // 显示行数
+  lineNumbers: true, // 显示行数
   lineWrapping: true, // 自动换行
   // foldGutter: true, // 展开收起
   tabSize: 2,

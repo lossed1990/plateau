@@ -28,7 +28,23 @@
       <el-main class="gy-main">
         <router-view></router-view>
       </el-main>
-      <el-footer class="gy-footer" height="32px">&nbsp;&nbsp;当前工作目录:D:\周报文档</el-footer>
+      <el-footer v-if=showStatusBar class="gy-footer" height="24px">
+        <span v-if=showFileListBar class="gy-footer-left" v-bind:style="{ 'margin-left': showFileListBar ? fileListBarWidth + 'px' : '0px'}">
+          <el-tooltip class="item" effect="dark" content="隐藏侧边栏" placement="top">
+            <button class="fa fa-eye-slash gy-footer-btn" type="text" icon="el-icon-close" @click="onSetFileListBarVisibale(false)"></button>
+          </el-tooltip>
+        </span>
+        <span v-if=!showFileListBar class="gy-footer-left" v-bind:style="{ 'margin-left': showFileListBar ? fileListBarWidth + 'px' : '0px'}">
+          <el-tooltip class="item" effect="dark" content="显示侧边栏" placement="top">
+            <button class="fa fa-eye gy-footer-btn" type="text" icon="el-icon-close" @click="onSetFileListBarVisibale(true)"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-footer-right">
+          <el-tooltip class="item" effect="dark" content="当前工作目录:D:\周报文档" placement="top">
+            <button class="fa fa-address-book gy-footer-btn" type="text" icon="el-icon-close"></button>
+          </el-tooltip>
+        </span>
+      </el-footer>
     </el-container>
   </el-container>
 </template>
@@ -40,11 +56,14 @@
     name: 'plateau',
     computed: mapState({
       leftToolBarWidth: state => state.UIStore.leftToolBarWidth,
-      headerHeight: state => state.UIStore.headerHeight
+      fileListBarWidth: state => state.UIStore.fileListBarWidth,
+      showStatusBar: state => state.UIStore.showStatusBar,
+      showFileListBar: state => state.UIStore.showFileListBar
     }),
     created: function () {
       // 初始化UI尺寸、布局等，后期考虑统一配置
       this.$store.dispatch('setLeftToolBarWidth', 66)
+      this.$store.dispatch('showStatusBar', false)
     },
     methods: {
       minimizeWindow () {
@@ -68,6 +87,9 @@
       },
       showPage (location) {
         this.$router.push(location)
+      },
+      onSetFileListBarVisibale (bVisible) {
+        this.$store.dispatch('showFileListBar', bVisible)
       }
     }
   }
@@ -164,8 +186,25 @@
   
   /* 底部状态栏样式 */
   .gy-container .el-footer {
-    line-height: 32px;
+    line-height: 24px;
     color: rgb(130, 130, 130);
     font-size: 14px;
+    /* background-color: rgba(64, 158, 255, 0.2); */
+  }
+
+  .gy-footer-right {
+    float: right;
+  }
+
+  .gy-footer-btn {
+    width: 24px;
+    height: 24px;
+    background-color: white;
+    color: rgba(119, 119, 119, 1);
+    border: 0px;
+  }
+
+  .gy-footer-btn:hover {
+    color: rgba(119, 119, 119, 0.8);
   }
 </style>

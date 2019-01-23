@@ -2,6 +2,16 @@
   <div>share</div>
 </template>
 
-<style>
+<script>
+  export default {
+    data: function () {
+      return {}
+    },
+    created: function () {
+      this.$store.dispatch('showStatusBar', false)
+    }
+  }
+</script>
 
+<style>
 </style>

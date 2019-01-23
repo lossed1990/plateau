@@ -3,6 +3,7 @@ import axios from 'axios'
 
 import Element from 'element-ui'
 import VueCodeMirror from 'vue-codemirror'
+import 'font-awesome/css/font-awesome.min.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/icon/iconfont.css'
 import 'vue-codemirror/node_modules/codemirror/lib/codemirror.css'
@@ -34,6 +35,17 @@ window.showError = (msg) => {
   try {
     vmApp.$message({
       type: 'error',
+      message: msg
+    })
+  } catch (e) {
+    alert(msg)
+  }
+}
+
+window.showSuccess = (msg) => {
+  try {
+    vmApp.$message({
+      type: 'success',
       message: msg
     })
   } catch (e) {

@@ -342,6 +342,32 @@ ConfigHelper.prototype.deleteMdFile = function (path, name) {
   }
 }
 
+ConfigHelper.prototype.readMdFile = function (path, name, callback) {
+  try {
+    this.checkWorkSpace()
+
+    let filePath = _workspace + '/' + path + '/' + name
+    _fs.readFile(filePath, callback)
+    return true
+  } catch (e) {
+    console.error('readMdFile failed', e)
+    return false
+  }
+}
+
+ConfigHelper.prototype.writeMdFile = function (path, name, content, callback) {
+  try {
+    this.checkWorkSpace()
+
+    let filePath = _workspace + '/' + path + '/' + name
+    _fs.writeFile(filePath, content, callback)
+    return true
+  } catch (e) {
+    console.error('writeMdFile failed', e)
+    return false
+  }
+}
+
 // function isExistBook (boxindex, bookname) {
 //   for (let i = 0; i < _booksConfig.bookboxs[boxindex].books.length; i++) {
 //     if (_booksConfig.bookboxs[boxindex].books[i] === bookname) {
