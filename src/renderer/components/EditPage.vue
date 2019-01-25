@@ -1,34 +1,108 @@
 <template>
-  <div id="gy_edit" @keyup.ctrl.83="onSave">
-    <div v-if=showFileListBar class="gy-leftcontainer-div" :style="{ width: fileListBarWidth + 'px' }">
-      <gy-sidebar ref="sidebar" :barwidth=fileListBarWidth @show-menu="onShowMenu">
-      </gy-sidebar>
+  <div id="gy_edit_component" @keyup.ctrl.83="onSave">
+    <div v-if=showFileListBar class="gy-filelistbar-div" :style="{ width: fileListBarWidth + 'px' }">
+      <gy-edit-filelistbar ref="filelistbar" :barwidth=fileListBarWidth @show-menu="onShowMenu">
+      </gy-edit-filelistbar>
     </div>
-    <div v-if=showFileListBar class="gy-middlesplit-div" v-bind:style="{ left: splitLeft + 'px' }" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>
-    <div class="gy-rightcontainer-div" v-bind:style="{ 'margin-left': showFileListBar ? splitRight + 'px' : '0px' }">
+    <div v-if=showFileListBar class="gy-editsplit-div" v-bind:style="{ left: editsplitLeft + 'px' }" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>
+    <div class="gy-editcontainer-div" v-bind:style="{ 'margin-left': showFileListBar ? editMarginLeft + 'px' : '0px' }">
+      <div class="gy-edit-tool">
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="粗体" placement="bottom">
+            <button class="fa fa-bold gy-edit-tool-btn" type="text" @click="onToolBtnBold"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="斜体" placement="bottom">
+            <button class="fa fa-italic gy-edit-tool-btn" type="text" @click="onToolBtnItalic"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="下划线" placement="bottom">
+            <button class="fa fa-underline gy-edit-tool-btn" type="text" @click="onToolBtnUnderline"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="删除线" placement="bottom">
+            <button class="fa fa-strikethrough gy-edit-tool-btn" type="text" @click="onToolBtnStrikethrough"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="标题" placement="bottom">
+            <button class="fa fa-header gy-edit-tool-btn" type="text" @click="onToolBtnHeader($event)"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="无序列表" placement="bottom">
+            <button class="fa fa-list-ul gy-edit-tool-btn" type="text" @click="onToolBtnListUl"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="有序列表" placement="bottom">
+            <button class="fa fa-list-ol gy-edit-tool-btn" type="text" @click="onToolBtnListOl"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="引用" placement="bottom">
+            <button class="fa fa-quote-left gy-edit-tool-btn" type="text" @click="onToolBtnQuoteleft"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="分割线" placement="bottom">
+            <button class="fa fa-minus gy-edit-tool-btn" type="text" @click="onToolBtnSplitLine"></button>
+          </el-tooltip>
+        </span>
+        <span class="gy-edit-tool-left">
+          <el-tooltip class="item" effect="dark" content="链接" placement="bottom">
+            <button class="fa fa-link gy-edit-tool-btn" type="text" @click="inputLinkDialogVisible = true"></button>
+          </el-tooltip>
+        </span>
+      </div>
       <codemirror
         ref="editor"
         :code="code"
         :options="editorOptions"
+        @input="onEditorCodeChange"
+        v-bind:style="{ 'width': previewLeft - editsplitLeft - 4 + 'px'}"
       />
+      <div class="gy-previewsplit-div" v-bind:style="{ 'left': previewLeft + 'px'}" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>  
+      <div class="gy-edit-preview markdown-body" v-bind:style="{ 'left': previewLeft + 4 + 'px'}" v-html="input">
+      </div>
     </div>
-    <gy-menu :menus="rightmenus" @click-menu="onClickMenu"></gy-menu>
+    <gy-menu :menus="filelistmenus" @click-menu="onClickFileListMenu"></gy-menu>
+    <gy-menu :menus="headermenus" @click-menu="onClickHeaderMenu"></gy-menu>
+    <el-dialog title="添加链接" :visible.sync="inputLinkDialogVisible" width="30%">
+      <el-form label-width="80px" :model="formLinkInfo">
+        <el-form-item label="链接地址">
+          <el-input v-model="formLinkInfo.address"></el-input>
+        </el-form-item>
+        <el-form-item label="链接标题">
+          <el-input v-model="formLinkInfo.title"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="inputLinkDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onInputLink">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import editorOptions from '@/scripts/editor.js'
+  import { debounce } from 'lodash'
+  import { compiledMarkdown } from '@/scripts/markdown.js'
   import { mapState } from 'vuex'
   import ComponentMenu from './common/Menu'
 
   const _configHelper = require('../scripts/bookmanager.js')
 
   // 左侧工具栏（文件、大纲）
-  var ComponentSideBar = {
+  var ComponentFileListBar = {
     props: ['barwidth'],
     template: `
-      <div class="gy-sidebar-div">
-        <div class="gy-sidebartab-div">
+      <div class="gy-edit-filelistbar-div">
+        <div class="gy-edit-filelistbartab-div">
           <div style="flex:1"></div>
           <div class="gy-panel-tab" :class="{ 'gy-panel-tab-active': name === 'files' }" @click="onChangeTab('files')">
             <div class="gy-panel-tab-title">文件</div>
@@ -41,7 +115,7 @@
           </div>
           <div style="flex:1"></div>
         </div>
-        <div v-if="name === 'files'" class="gy-sidebarpanel-div">
+        <div v-if="name === 'files'" class="gy-edit-filelistbarpanel-div">
           <div class="gy-files-top-div">
             <span class="fa fa-folder"></span>
             <input type="text" readonly='readonly' unselectable='on' :value="currentSelectBookName" :title="currentSelectBookName"/>
@@ -56,7 +130,7 @@
             </div>
           </div>
         </div>
-        <div v-if="name === 'outline'" class="gy-sidebarpanel-div">
+        <div v-if="name === 'outline'" class="gy-edit-filelistbarpanel-div">
           outline
         </div>
       </div>
@@ -92,8 +166,8 @@
       onShowMenu: function (index, event) {
         this.$emit('show-menu', index, event)
       },
-      onClickMenu: function (name, userdata) {
-        console.log('onClickMenu 删除文件', name, userdata)
+      onClickFileListMenu: function (index, name, userdata) {
+        console.log('onClickFileListMenu 删除文件', name, userdata)
         switch (name) {
           case '打开':
             this.onClickFileName(userdata)
@@ -155,13 +229,21 @@
     data: function () {
       return {
         fileListBarWidth: 200,
+        previewLeft: 800,
         code: 'dsasdfds',
+        input: '',
         editorOptions,
-        rightmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1}
+        filelistmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1},
+        headermenus: {visible: false, left: 200, top: 200, items: ['一级标题', '二级标题', '三级标题', '四级标题', '五级标题', '六级标题'], userdata: 1},
+        inputLinkDialogVisible: false,
+        formLinkInfo: {
+          address: '',
+          title: ''
+        }
       }
     },
     components: {
-      'gy-sidebar': ComponentSideBar,
+      'gy-edit-filelistbar': ComponentFileListBar,
       'gy-menu': ComponentMenu
     },
     created: function () {
@@ -177,11 +259,14 @@
       }
     },
     computed: {
-      splitLeft () {
+      codemirror () {
+        return this.$refs.editor.codemirror
+      },
+      editsplitLeft () {
         return this.fileListBarWidth + this.leftToolBarWidth
       },
-      splitRight () {
-        return this.splitLeft + 4 - this.leftToolBarWidth
+      editMarginLeft () {
+        return this.editsplitLeft + 4 - this.leftToolBarWidth
       },
       ...mapState({
         leftToolBarWidth: state => state.UIStore.leftToolBarWidth,
@@ -193,20 +278,38 @@
     },
     methods: {
       onMouseDown: function (event) {
-        let dx = this.fileListBarWidth - event.clientX
-        event.target.setPointerCapture(event.pointerId)
-        event.target.onpointermove = (ev) => {
-          this.fileListBarWidth = ev.clientX + dx
-          if (this.fileListBarWidth < 100) {
-            this.fileListBarWidth = 100
-          }
+        if (event.target.className === 'gy-editsplit-div') {
+          let dx = this.fileListBarWidth - event.clientX
+          event.target.setPointerCapture(event.pointerId)
+          event.target.onpointermove = (ev) => {
+            this.fileListBarWidth = ev.clientX + dx
+            if (this.fileListBarWidth < 100) {
+              this.fileListBarWidth = 100
+            }
 
-          if (this.fileListBarWidth > 500) {
-            this.fileListBarWidth = 500
-          }
+            if (this.fileListBarWidth > 500) {
+              this.fileListBarWidth = 500
+            }
 
-          this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
-          // console.log('onMouseMove>>w:' + this.leftListBarWidth)
+            this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
+          }
+        } else if (event.target.className === 'gy-previewsplit-div') {
+          let dx = this.previewLeft - event.clientX
+          event.target.setPointerCapture(event.pointerId)
+          event.target.onpointermove = (ev) => {
+            this.previewLeft = ev.clientX + dx
+
+            let minLeft = this.showFileListBar ? 200 + this.editsplitLeft : 200 + this.leftToolBarWidth
+            let maxLeft = document.body.clientWidth - 200
+            if (this.previewLeft < minLeft) {
+              this.previewLeft = minLeft
+            }
+
+            if (this.previewLeft > maxLeft) {
+              this.previewLeft = maxLeft
+            }
+            // this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
+          }
         }
       },
       onMouseUp: function (event) {
@@ -222,11 +325,67 @@
           userdata: index,
           visible: true
         }
-        this.rightmenus = menuInfo
+        this.filelistmenus = menuInfo
       },
-      onClickMenu: function (name, userdata) {
-        this.rightmenus = {visible: false}
-        this.$refs.sidebar.onClickMenu(name, userdata)
+      onClickFileListMenu: function (index, name, userdata) {
+        this.filelistmenus = {visible: false}
+        this.$refs.filelistbar.onClickFileListMenu(index, name, userdata)
+      },
+      onClickHeaderMenu: function (index, name, userdata) {
+        let strFlag = '#'
+        strFlag = strFlag.repeat(index + 1)
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`${strFlag} ${selection}`)
+        this.headermenus.visible = false
+      },
+      onEditorCodeChange: debounce(function (newCode) {
+        this.code = newCode
+        this.input = compiledMarkdown(newCode)
+      }, 200),
+      onToolBtnBold: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`**${selection}**`)
+      },
+      onToolBtnItalic: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`*${selection}*`)
+      },
+      onToolBtnUnderline: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`++${selection}++`)
+      },
+      onToolBtnStrikethrough: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`~~${selection}~~`)
+      },
+      onToolBtnHeader: function (event) {
+        this.headermenus.left = event.clientX
+        this.headermenus.top = event.clientY
+        this.headermenus.visible = true
+      },
+      onToolBtnListUl: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`- ${selection}`)
+      },
+      onToolBtnListOl: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`1. ${selection}`)
+      },
+      onToolBtnQuoteleft: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`> ${selection}`)
+      },
+      onToolBtnSplitLine: function () {
+        let selection = this.codemirror.getSelection()
+        this.codemirror.replaceSelection(`\n---\n${selection}`)
+      },
+      onInputLink: function () {
+        this.inputLinkDialogVisible = false
+        console.log(this.formLinkInfo.address)
+        console.log(this.formLinkInfo.title)
+        this.codemirror.replaceSelection(`[${this.formLinkInfo.title}](${this.formLinkInfo.address})`)
+        this.formLinkInfo.address = ''
+        this.formLinkInfo.title = ''
       },
       onSave: function () {
         console.log('onSave')
@@ -260,20 +419,22 @@
 </script>
 
 <style>
-  #gy_edit {
-    float: left;
+  #gy_edit_component {
+    /* float: left;
     width: 100%;
+    height: calc(100vh - 78px);
+    background: tomato; */
   }
 
-  .gy-leftcontainer-div {
+  .gy-filelistbar-div {
     width: 196px;
     height: calc(100vh - 52px);
-    /* background: tomato; */
+    /* background: cornflowerblue; */
     overflow-y: auto;
     position: fixed;
   }
 
-  .gy-middlesplit-div {
+  .gy-editsplit-div {
     /* background: cornflowerblue; */
     left: 196px;
     border-left: 1px solid #EDEDED;
@@ -283,20 +444,20 @@
     cursor: w-resize;
   }
 
-  .gy-rightcontainer-div {
+  .gy-editcontainer-div {
     margin-left: 200px;
     background-color: greenyellow;
   }
 
   /* 
-  .gy-rightcontainer-div footer {
+  .gy-editcontainer-div footer {
     position:fixed;
     bottom:0px;
     width:100%;
     height:50px;
   } */
 
-  .gy-sidebartab-div {
+  .gy-edit-filelistbartab-div {
     /* display: block; */
     /* background-color: red; */
     display: flex;
@@ -426,14 +587,37 @@
     background-color: rgb(212, 213, 214);
   }
 
+  .gy-edit-tool {
+    height: 32px;
+    background: rgb(235, 238, 240);
+  }
+
+  .gy-edit-tool-btn {
+    margin: 0px 1px 0px 0px;
+    width: 28px;
+    height: 32px;
+    background-color: rgb(235, 238, 240);
+    color: rgba(119, 119, 119, 1);
+    border: 0px;
+  }
+
+  .gy-edit-tool-btn:hover {
+    color: rgba(119, 119, 119, 0.8);
+    background-color: rgb(247, 247, 247);;
+  }
+
   .vue-codemirror {
-    /* background-color: rgb(59, 174, 250); */
+    background-color: rgb(59, 174, 250);
     font-size: 18px;
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     color: #606266;
     max-width: 800px;
-    position: relative;
-    margin: 0 auto;
+    /* position: relative;
+    margin: 0 auto;*/
+    width: auto;
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+    position: fixed;
   }
 
   .CodeMirror {
@@ -450,5 +634,24 @@
 
   .CodeMirror .CodeMirror-gutters {
     border-right: 0px;
+  }
+
+  .gy-previewsplit-div {
+    /* background: cornflowerblue; */
+    left: 596px;
+    border-left: 1px solid #EDEDED;
+    width: 3px;
+    height: calc(100vh - 110px);
+    position: fixed;
+    cursor: w-resize;
+  }
+
+  .gy-edit-preview {
+    right:0px;
+    width: 100%;
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+    position: fixed;
+    /* background: #606266; */
   }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <ul v-if=menus.visible class="gy-menu" v-bind:style="{ 'top': menus.top + 'px', 'left': menus.left + 'px' }">
-    <li v-for="(menuitem, index) in menus.items" :key="index" class='gy-menu-item' :class="{ 'gy-menu-item-separation': menuitem === '' }" @click="onMenuClick(menuitem, menus.userdata)">
+    <li v-for="(menuitem, index) in menus.items" :key="index" class='gy-menu-item' :class="{ 'gy-menu-item-separation': menuitem === '' }" @click="onMenuClick(index, menuitem, menus.userdata)">
       {{menuitem}}
     </li>
   </ul>
@@ -14,8 +14,8 @@
       }
     },
     methods: {
-      onMenuClick: function (name, userdata) {
-        this.$emit('click-menu', name, userdata)
+      onMenuClick: function (index, name, userdata) {
+        this.$emit('click-menu', index, name, userdata)
       }
     },
     mounted () {
