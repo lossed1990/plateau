@@ -1,7 +1,16 @@
 import marked from 'marked'
+import katex from 'katex'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/googlecode.css'
 
 let isInit = false
 let tocObj
+
+function katexRender (text) {
+  // 解决部分字符解析问题 https://katex.org/docs/error.html
+  text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
+  return katex.renderToString(text, {throwOnError: false})
+}
 
 function initMarkdown () {
   let markedRenderer = new marked.Renderer()
@@ -54,40 +63,63 @@ function initMarkdown () {
   }
 
   markedRenderer.heading = function (text, level, raw) {
-    console.log('markedRenderer heading', `text:${text};level:${level};raw:${raw}`)
+    // 解析标题 H1~H6
     let anchor = tocObj.add(text, level)
     return `<a id=${anchor} class="anchor-fix"></a><h${level}>${text}</h${level}>\n`
   }
 
-  let oldParagraph = markedRenderer.paragraph
-  console.log('oldParagraph', oldParagraph)
+  let oldParagraphRenderer = markedRenderer.paragraph
   markedRenderer.paragraph = function (text) {
+    // 解析TOC
     let isToc = /^\[TOC\]$/.test(text)
     if (isToc) {
       return tocObj.toHtml()
     }
-    // console.log('paragraph', isToC)
-    // console.log(tocObj.toHtml())
-    return oldParagraph(text)
-    // let isTeXInline = /\$\$(.*)\$\$/g.test(text)
-    // let isTeXLine = /^\$\$(.*)\$\$$/.test(text)
-    // let isTeXAddClass = (isTeXLine) ? " class=\"editormd-tex\"" : ""
-    // let isToC = /^\[TOC\]$/.test(text)
 
-    // if (!isTeXLine && isTeXInline)
-    // {
-    //   text = text.replace(/(\$\$([^\$]*)\$\$)+/g, function($1, $2) {
-    //     return "<span class=\"editormd-tex\">" + $2.replace(/\$/g, "") + "</span>"
-    //   })
-    // }
-    // else
-    // {
-    //   text = (isTeXLine) ? text.replace(/\$/g, "") : text
-    // }
+    // 解析数学公式
+    let isTeXInline = /\$\$(.*)\$\$/g.test(text)
+    let isTeXLine = /^\$\$(.*)\$\$$/.test(text)
 
-    // var tocHTML = "<div class=\"markdown-toc editormd-markdown-toc\">" + text + "</div>"
-    // console('tocHTML', tocHTML)
-    // return (isToC) ? tocHTML  : ( "<p" + isTeXAddClass + ">" + this.atLink(this.emoji(text)) + "</p>\n" );
+    if (!isTeXLine && isTeXInline) {
+      text = text.replace(/(\$\$([^$]*)\$\$)+/g, function ($1, $2) {
+        return $2.replace(/\$/g, '')
+      })
+      return katexRender(text)
+    } else if (isTeXLine) {
+      let katexText = katexRender(text.replace(/\$/g, ''))
+      return `<p>${katexText}</p>\n`
+    }
+
+    // 默认解析
+    return oldParagraphRenderer(text)
+  }
+
+  markedRenderer.code = function (code, lang, escaped) {
+    let obj = {
+      code: code,
+      lang: lang,
+      escaped: escaped
+    }
+    console.log(obj)
+    if (lang === 'math' || lang === 'latex' || lang === 'katex') {
+      let katexText = katexRender(code)
+      return `<p>${katexText}</p>\n`
+    }
+
+    // 总代码行数
+    let rowCount = arguments[0].match(/\n/g).length + 1
+    // 行号占位数
+    let maxSpaceNumberCount = rowCount.toString().length
+    let index = 1
+    let strFlag = ' '.repeat(maxSpaceNumberCount - 1)
+    arguments[0] = arguments[0].replace(/^/g, `${strFlag}1. `).replace(/\n/g, function () {
+      index++
+      // 行号前缀空格数
+      let nSpaceCount = maxSpaceNumberCount - index.toString().length
+      strFlag = ' '.repeat(nSpaceCount)
+      return `\n${strFlag}${index}. `
+    })
+    return marked.Renderer.prototype.code.apply(this, arguments)
   }
 
   marked.setOptions({
@@ -98,7 +130,14 @@ function initMarkdown () {
     pedantic: false,
     sanitize: false,
     smartLists: true,
-    smartypants: false
+    smartypants: false,
+    highlight: function (code, lang) {
+      if (lang && hljs.getLanguage(lang)) {
+        return hljs.highlight(lang, code, true).value
+      } else {
+        return hljs.highlightAuto(code).value
+      }
+    }
   })
 }
 
@@ -108,8 +147,6 @@ export const compiledMarkdown = (content) => {
     isInit = true
   }
 
-  // let strContent = marked(content)
-  // return tocObj.toHtml() + strContent
   return marked(content)
 }
 

@@ -20,7 +20,7 @@
     </el-aside>
     <el-container class="gy-container">
       <el-header class="gy-header" @dblclick="maximizeWindow" height="52px">
-        <span>123</span>
+        <span></span>
         <el-button class="gy-header-btn" type="text" icon="el-icon-close" @click="closeWindow"></el-button>
         <el-button class="gy-header-btn" type="text" icon="el-icon-my-copy-o" @click="maximizeWindow"></el-button>
         <el-button class="gy-header-btn" type="text" icon="el-icon-minus" @click="minimizeWindow"></el-button>

@@ -25,16 +25,16 @@ export default function initWindow () {
     // document.selection.empty()
   }
 
-  document.oncopy = (e) => {
-    e.preventDefault()
-    return false
-  }
-  document.onpaste = (e) => {
-    e.preventDefault()
-    return false
-  }
-  document.oncut = (e) => {
-    e.preventDefault()
-    return false
-  }
+  // document.oncopy = (e) => {
+  //   e.preventDefault()
+  //   return false
+  // }
+  // document.onpaste = (e) => {
+  //   e.preventDefault()
+  //   return false
+  // }
+  // document.oncut = (e) => {
+  //   e.preventDefault()
+  //   return false
+  // }
 }

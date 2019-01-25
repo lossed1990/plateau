@@ -230,7 +230,7 @@
       return {
         fileListBarWidth: 200,
         previewLeft: 800,
-        code: 'dsasdfds',
+        code: '',
         input: '',
         editorOptions,
         filelistmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1},
@@ -611,8 +611,8 @@
     font-size: 18px;
     font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
     color: #606266;
-    max-width: 800px;
-    /* position: relative;
+    /* max-width: 800px;
+    position: relative;
     margin: 0 auto;*/
     width: auto;
     height: calc(100vh - 110px);

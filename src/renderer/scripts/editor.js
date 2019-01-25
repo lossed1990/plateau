@@ -14,7 +14,7 @@ import 'vue-codemirror/node_modules/codemirror/addon/fold/markdown-fold.js'
 import 'vue-codemirror/node_modules/codemirror/addon/fold/comment-fold.js'
 import 'vue-codemirror/node_modules/codemirror/addon/selection/active-line.js'
 
-const controlKey = process.platform === 'win32' ? 'Ctrl' : 'Cmd'
+// const controlKey = process.platform === 'win32' ? 'Ctrl' : 'Cmd'
 
 export default {
   mode: {
@@ -39,25 +39,35 @@ export default {
   autoCloseBrackets: true,
   autoRefresh: true,
   extraKeys: {
-    Enter: 'newlineAndIndentContinueMarkdownList',
-    // **bold**
-    [`${controlKey}-B`]: function (cm) {
-      let s = cm.getSelection()
-      let t = s.slice(0, 2) === '**' && s.slice(-2) === '**'
-      cm.replaceSelection(t ? s.slice(2, -2) : '**' + s + '**', 'around')
-    },
-    // _italic_
-    [`${controlKey}-I`]: function (cm) {
-      let s = cm.getSelection()
-      let t = s.slice(0, 1) === '_' && s.slice(-1) === '_'
-      cm.replaceSelection(t ? s.slice(1, -1) : '_' + s + '_', 'around')
-    },
-    // `code`
-    'Shift-@': function (cm) {
-      let s = cm.getSelection()
-      let t = s.slice(0, 1) === '`' && s.slice(-1) === '`'
-      cm.replaceSelection(t ? s.slice(1, -1) : '`' + s + '`', 'around')
-    }
+    // Enter: 'newlineAndIndentContinueMarkdownList',
+    // // **bold**
+    // [`${controlKey}-B`]: function (cm) {
+    //   let s = cm.getSelection()
+    //   let t = s.slice(0, 2) === '**' && s.slice(-2) === '**'
+    //   cm.replaceSelection(t ? s.slice(2, -2) : '**' + s + '**', 'around')
+    // },
+    // // _italic_
+    // [`${controlKey}-I`]: function (cm) {
+    //   let s = cm.getSelection()
+    //   let t = s.slice(0, 1) === '_' && s.slice(-1) === '_'
+    //   cm.replaceSelection(t ? s.slice(1, -1) : '_' + s + '_', 'around')
+    // },
+    // // `code`
+    // 'Shift-@': function (cm) {
+    //   let s = cm.getSelection()
+    //   let t = s.slice(0, 1) === '`' && s.slice(-1) === '`'
+    //   cm.replaceSelection(t ? s.slice(1, -1) : '`' + s + '`', 'around')
+    // }
+    // [`${controlKey}-C`]: function (cm) {
+    //   let s = cm.getSelection()
+    //   function copyEvent (event) {
+    //     event.clipboardData.setData('Text', s)
+    //     event.preventDefault()
+    //     document.removeEventListener('copy', copyEvent)
+    //   }
+    //   document.addEventListener('copy', copyEvent)
+    //   document.execCommand('copy', false, null)
+    // }
   },
   gutters: ['CodeMirror-linenumbers', 'CodeMirror-foldgutter'],
   styleSelectedText: true
