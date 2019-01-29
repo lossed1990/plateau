@@ -92,6 +92,7 @@
   import editorOptions from '@/scripts/editor.js'
   import { debounce } from 'lodash'
   import { compiledMarkdown } from '@/scripts/markdown.js'
+  import mermaid from 'mermaid'
   import { mapState } from 'vuex'
   import ComponentMenu from './common/Menu'
 
@@ -241,6 +242,11 @@
           title: ''
         }
       }
+    },
+    updated: function () {
+      console.log('@@updated', arguments)
+      // 页面内容更新后，重新渲染mermaid图表
+      mermaid.init(undefined, '.mermaid')
     },
     components: {
       'gy-edit-filelistbar': ComponentFileListBar,
@@ -647,11 +653,11 @@
   }
 
   .gy-edit-preview {
-    right:0px;
-    width: 100%;
+    right: 0px;
+    width: auto;
     height: calc(100vh - 110px);
     overflow-y: auto;
+    overflow-x: auto;
     position: fixed;
-    /* background: #606266; */
   }
 </style>

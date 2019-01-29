@@ -68,7 +68,6 @@ function initMarkdown () {
     return `<a id=${anchor} class="anchor-fix"></a><h${level}>${text}</h${level}>\n`
   }
 
-  let oldParagraphRenderer = markedRenderer.paragraph
   markedRenderer.paragraph = function (text) {
     // 解析TOC
     let isToc = /^\[TOC\]$/.test(text)
@@ -91,19 +90,27 @@ function initMarkdown () {
     }
 
     // 默认解析
-    return oldParagraphRenderer(text)
+    return marked.Renderer.prototype.paragraph.apply(this, arguments)
   }
 
   markedRenderer.code = function (code, lang, escaped) {
-    let obj = {
-      code: code,
-      lang: lang,
-      escaped: escaped
-    }
-    console.log(obj)
+    // 通过katex库，支持数学公式
     if (lang === 'math' || lang === 'latex' || lang === 'katex') {
       let katexText = katexRender(code)
       return `<p>${katexText}</p>\n`
+    }
+
+    // 通过mermaid，支持流程图等;【备注】暂不支持类图和git图，绘制坐标存在一些问题，未能解决/* || code.match(/^classDiagram/) || code.match(/^gitGraph/) */
+    if (code.match(/^sequenceDiagram/) || code.match(/^graph/) || code.match(/^gantt/)) {
+      // 另一种方式：直接渲染成svg标签，（需要import mermaid from 'mermaid'，并定义mermaidIndex变量）但是需要自己控制id，感觉不太合理。目前通过监听页面更新，然后渲染。
+      // let info = ''
+      // let callback = function (svgGraph) {
+      //   info = svgGraph
+      // }
+      // mermaidIndex++
+      // mermaid.render(`mermaid${mermaidIndex}`, code, callback)
+      // return `<div id="mermaid${mermaidIndex}" style="width: 800px;height: 600px">${info}</div>`
+      return '<div class="mermaid">' + code + '</div>'
     }
 
     // 总代码行数
@@ -120,6 +127,15 @@ function initMarkdown () {
       return `\n${strFlag}${index}. `
     })
     return marked.Renderer.prototype.code.apply(this, arguments)
+  }
+
+  markedRenderer.listitem = function (text) {
+    // 优化 - [ ] 和 -[x]的解析，去掉解析后li的样式
+    if (/<input.*disabled="" type="checkbox">/.test(text)) {
+      return '<li style="list-style: none;">' + text + '</li>\n'
+    }
+
+    return marked.Renderer.prototype.listitem.apply(this, arguments)
   }
 
   marked.setOptions({
@@ -149,45 +165,3 @@ export const compiledMarkdown = (content) => {
 
   return marked(content)
 }
-
-// import MarkdownIt from 'markdown-it'
-// import MarkdownItCheckbox from 'markdown-it-checkbox'
-// import MarkdownItFootnote from 'markdown-it-footnote'
-
-// import Prism from 'prismjs'
-// import 'prismjs/plugins/remove-initial-line-feed/prism-remove-initial-line-feed.min.js'
-
-// export const initMarkdown = () => {
-//   let markdown = new MarkdownIt({
-//     html: true,
-//     xhtmlOut: false,
-//     breaks: true,
-//     langPrefix: 'language-',
-//     linkify: true,
-//     typographer: true,
-//     highlight: function (str, lang) {
-//       const language = !lang || lang === 'html' ? 'markup' : lang
-//       try {
-//         if (!Prism.languages[language]) {
-//           require(`prismjs/components/prism-${language}.min.js`)
-//         }
-//         if (Prism.languages[language]) {
-//           return Prism.highlight(str, Prism.languages[language])
-//         }
-//       } catch (e) {
-//         console.error(e)
-//         return ''
-//       }
-
-//       return ''
-//     }
-//   })
-
-//   markdown
-//     .use(MarkdownItCheckbox, {
-//       idPrefix: 'checkbox_'
-//     })
-//     .use(MarkdownItFootnote)
-
-//   return markdown
-// }

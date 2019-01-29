@@ -36,7 +36,7 @@ export default {
   // styleActiveLine: true, // 当前行背景高亮
   matchBrackets: true, // 括号匹配
   dragDrop: false,
-  autoCloseBrackets: true,
+  autoCloseBrackets: false, // 关闭括号匹配
   autoRefresh: true,
   extraKeys: {
     // Enter: 'newlineAndIndentContinueMarkdownList',
