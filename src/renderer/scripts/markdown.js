@@ -3,8 +3,11 @@ import katex from 'katex'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/googlecode.css'
 
-let isInit = false
-let tocObj
+let _isInit = false
+let _workSpace = ''
+let _tocObj
+let _footnoteFlagIndex = 0
+let _footNotesObj
 
 function katexRender (text) {
   // 解决部分字符解析问题 https://katex.org/docs/error.html
@@ -14,7 +17,7 @@ function katexRender (text) {
 
 function initMarkdown () {
   let markedRenderer = new marked.Renderer()
-  tocObj = {
+  _tocObj = {
     toc: [],
     index: 0,
     add: function (text, level) {
@@ -62,35 +65,105 @@ function initMarkdown () {
     }
   }
 
+  _footNotesObj = {
+    footnote: [],
+    index: 0,
+    add: function (flag, text) {
+      var anchor = `<span id="fn:${flag}">[${++this.index}] </span>${text}<a href="#fnref:${flag}" title="回到文稿" class="gy-footnote fa fa-hand-o-up"></a><br/>`
+      this.footnote.push(anchor)
+    },
+    toHtml: function () {
+      if (this.footnote.length === 0) {
+        return ''
+      }
+
+      let result = '<div class="gy-footnotes-div"><hr><small>'
+      this.footnote.forEach(function (item) {
+        result += item
+      })
+      result += '</small></div>'
+
+      // 清理先前数据供下次使用
+      this.footnote = []
+      this.index = 0
+      return result
+    }
+  }
+
   markedRenderer.heading = function (text, level, raw) {
     // 解析标题 H1~H6
-    let anchor = tocObj.add(text, level)
+    let anchor = _tocObj.add(text, level)
     return `<a id=${anchor} class="anchor-fix"></a><h${level}>${text}</h${level}>\n`
   }
 
-  markedRenderer.paragraph = function (text) {
-    // 解析TOC
-    let isToc = /^\[TOC\]$/.test(text)
-    if (isToc) {
-      return tocObj.toHtml()
-    }
-
-    // 解析数学公式
-    let isTeXInline = /\$\$(.*)\$\$/g.test(text)
-    let isTeXLine = /^\$\$(.*)\$\$$/.test(text)
-
-    if (!isTeXLine && isTeXInline) {
-      text = text.replace(/(\$\$([^$]*)\$\$)+/g, function ($1, $2) {
-        return $2.replace(/\$/g, '')
-      })
-      return katexRender(text)
-    } else if (isTeXLine) {
-      let katexText = katexRender(text.replace(/\$/g, ''))
-      return `<p>${katexText}</p>\n`
+  markedRenderer.image = function (href, title, text) {
+    // 自定义解析粘贴及拖拽的图片的相对路径
+    let isCustomPath = /\*/g.test(href)
+    if (isCustomPath) {
+      href = href.replace(/\*/g, `${_workSpace}/.plateau/image`)
+      let out = '<img src="' + href + '" alt="' + text + '"'
+      if (title) {
+        out += ' title="' + title + '"'
+      }
+      out += marked.options.xhtml ? '/>' : '>'
+      return out
     }
 
     // 默认解析
-    return marked.Renderer.prototype.paragraph.apply(this, arguments)
+    return marked.Renderer.prototype.image.apply(this, arguments)
+  }
+
+  markedRenderer.paragraph = function (text) {
+    let arrayLine = text.split('\n')
+    console.log('isBr is true', arrayLine)
+    let result = ''
+
+    arrayLine.forEach(function (item) {
+      // 解析TOC
+      let isToc = /^\[TOC\]$/.test(item)
+      if (isToc) {
+        result += _tocObj.toHtml()
+        return
+      }
+
+      // 解析脚标
+      let isFootnoteFlag = /\[\^(((?!(\[|\])).)*)\]/.test(item)
+      let isFootnoteContent = /^\[\^(.*)\]:(.*)$/.test(item)
+      if (isFootnoteFlag && !isFootnoteContent) {
+        item = item.replace(/\[\^(((?!(\[|\])).)*)\]/g, function (str, key) {
+          return `<sup><a href="#fn:${key}" id="fnref:${key}" title="查看注脚" class="gy-footnote-flag">[${++_footnoteFlagIndex}]</a></sup>`
+        })
+      }
+
+      if (isFootnoteContent) {
+        let index = item.lastIndexOf(']:')
+        let flag = item.substring(2, index)
+        let info = item.substring(index + 2, item.length)
+        _footNotesObj.add(flag, info)
+        result += ''
+        return
+      }
+
+      // 解析数学公式
+      let isTeXInline = /\$\$(.*)\$\$/g.test(item)
+      let isTeXLine = /^\$\$(.*)\$\$$/.test(item)
+
+      if (!isTeXLine && isTeXInline) {
+        item = item.replace(/(\$\$([^$]*)\$\$)+/g, function (str, key) {
+          return katexRender(key.replace(/\$/g, ''))
+        })
+      } else if (isTeXLine) {
+        let katexText = katexRender(text.replace(/\$/g, ''))
+        result += `<p>${katexText}</p>\n`
+        return
+      }
+
+      // 默认解析
+      arguments[0] = item
+      result += marked.Renderer.prototype.paragraph.apply(this, arguments)
+    })
+
+    return result
   }
 
   markedRenderer.code = function (code, lang, escaped) {
@@ -98,6 +171,12 @@ function initMarkdown () {
     if (lang === 'math' || lang === 'latex' || lang === 'katex') {
       let katexText = katexRender(code)
       return `<p>${katexText}</p>\n`
+    }
+
+    // if (lang === 'primary' || lang === 'success' || lang === 'info' || lang === 'warning' || lang === 'danger') {
+    if (lang === 'tip1' || lang === 'tip2' || lang === 'tip3' || lang === 'tip4' || lang === 'tip5') {
+      code = code.replace(/\n/g, `<br/>`)
+      return `<div class="gy-markdown-tip ${lang}">${code}</div>\n`
     }
 
     // 通过mermaid，支持流程图等;【备注】暂不支持类图和git图，绘制坐标存在一些问题，未能解决/* || code.match(/^classDiagram/) || code.match(/^gitGraph/) */
@@ -157,11 +236,25 @@ function initMarkdown () {
   })
 }
 
-export const compiledMarkdown = (content) => {
-  if (!isInit) {
+export const compiledMarkdown = (content, workspace) => {
+  _workSpace = workspace
+  _footnoteFlagIndex = 0
+
+  if (!_isInit) {
     initMarkdown()
-    isInit = true
+    _isInit = true
   }
 
-  return marked(content)
+  let result = ''
+  if (content && content.length > 0) {
+    try {
+      result = marked(content) + _footNotesObj.toHtml()
+    } catch (e) {
+      result = ''
+      console.log('marked exception', e)
+    }
+  } else {
+    console.log('marked null')
+  }
+  return result
 }

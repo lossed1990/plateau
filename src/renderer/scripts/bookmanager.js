@@ -83,7 +83,7 @@ ConfigHelper.prototype.saveWorkspace = function (path) {
 
   let configPath = _path.join(__dirname, '../../config/config.json')
   _config.workspace = path
-  _workspace = path
+  _workspace = path.replace(/\\/g, `/`)
   _fs.writeFileSync(configPath, JSON.stringify(_config))
 }
 
@@ -124,6 +124,7 @@ ConfigHelper.prototype.iniWorkspace = function (path) {
   if (!_fs.existsSync(configPath)) {
     _fs.mkdirSync(configPath)
     _fs.mkdirSync(configPath + 'back/')
+    _fs.mkdirSync(configPath + 'image/')
 
     this.initDataConfig(configPath + 'data.json')
   }
@@ -365,6 +366,35 @@ ConfigHelper.prototype.writeMdFile = function (path, name, content, callback) {
   } catch (e) {
     console.error('writeMdFile failed', e)
     return false
+  }
+}
+
+ConfigHelper.prototype.pasteImageFile = function (imgData) {
+  try {
+    this.checkWorkSpace()
+
+    let fileName = `${new Date().getTime()}.png`
+    let base64Data = imgData.replace(/^data:image\/\w+;base64,/, '')
+    let dataBuffer = Buffer.from(base64Data, 'base64')
+    _fs.writeFileSync(`${_workspace}/.plateau/image/${fileName}`, dataBuffer)
+    return `*/${fileName}`
+  } catch (e) {
+    console.error('pasteImageFile failed', e)
+    return ''
+  }
+}
+
+ConfigHelper.prototype.copyImageFile = function (path) {
+  try {
+    this.checkWorkSpace()
+
+    let ext = path.replace(/^.+\./, '')
+    let fileName = `${new Date().getTime()}.${ext}`
+    _fs.copyFileSync(path, `${_workspace}/.plateau/image/${fileName}`)
+    return `*/${fileName}`
+  } catch (e) {
+    console.error('copyImageFile failed', e)
+    return ''
   }
 }
 

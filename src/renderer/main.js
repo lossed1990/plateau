@@ -16,7 +16,7 @@ import router from './router'
 import store from './store'
 
 Vue.use(Element)
-Vue.use(VueCodeMirror)
+Vue.use(VueCodeMirror, {events: ['paste', 'drop']})
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios

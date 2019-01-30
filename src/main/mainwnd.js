@@ -17,7 +17,10 @@ function createWnd () {
     thickFrame: false,
     autoHideMenuBar: true,
     show: false,
-    title: ''
+    title: '',
+    webPreferences: {
+      webSecurity: false
+    }
   }
   options.icon = path.join(__dirname, '../../build/icons/icon.ico')
   mainWindow = new BrowserWindow(options)

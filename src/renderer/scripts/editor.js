@@ -35,7 +35,7 @@ export default {
   electricChars: true,
   // styleActiveLine: true, // 当前行背景高亮
   matchBrackets: true, // 括号匹配
-  dragDrop: false,
+  // dragDrop: false,
   autoCloseBrackets: false, // 关闭括号匹配
   autoRefresh: true,
   extraKeys: {

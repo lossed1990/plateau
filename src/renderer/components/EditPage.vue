@@ -63,6 +63,8 @@
         :code="code"
         :options="editorOptions"
         @input="onEditorCodeChange"
+        @paste="onPaste"
+        @drop="onDrop"
         v-bind:style="{ 'width': previewLeft - editsplitLeft - 4 + 'px'}"
       />
       <div class="gy-previewsplit-div" v-bind:style="{ 'left': previewLeft + 'px'}" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>  
@@ -244,7 +246,6 @@
       }
     },
     updated: function () {
-      console.log('@@updated', arguments)
       // 页面内容更新后，重新渲染mermaid图表
       mermaid.init(undefined, '.mermaid')
     },
@@ -253,8 +254,6 @@
       'gy-menu': ComponentMenu
     },
     created: function () {
-      // console.log(this.currentSelectBook.path)
-      console.log(this)
       this.$store.dispatch('showStatusBar', true)
       this.$store.dispatch('showFileListBar', true)
       this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
@@ -346,8 +345,45 @@
       },
       onEditorCodeChange: debounce(function (newCode) {
         this.code = newCode
-        this.input = compiledMarkdown(newCode)
+        let workspace = _configHelper.getWorkspace().workspace
+        if (workspace !== '') {
+          this.input = compiledMarkdown(newCode, workspace)
+        } else {
+          console.error('compiledMarkdown failed, worksapce is null')
+        }
       }, 200),
+      onPaste: function (cm, e) {
+        let self = this
+        for (let i = 0, len = e.clipboardData.items.length; i < len; i++) {
+          if (e.clipboardData.items[i].kind === 'file' && e.clipboardData.items[i].type.indexOf('image') !== -1) {
+            let pasteFile = e.clipboardData.items[i].getAsFile()
+            let reader = new FileReader()
+            reader.onloadend = function (event) {
+              let imgBase64 = event.target.result
+              let res = _configHelper.pasteImageFile(imgBase64)
+              if (res !== '') {
+                self.codemirror.replaceSelection(`![image](${res})`)
+              } else {
+                window.showError('图片粘贴失败，请重试！')
+              }
+            }
+            reader.readAsDataURL(pasteFile)
+          }
+        }
+      },
+      onDrop: function (cm, e) {
+        let self = this
+        for (let i = 0, len = e.dataTransfer.files.length; i < len; i++) {
+          if (e.dataTransfer.files[i].type.indexOf('image') !== -1) {
+            let res = _configHelper.copyImageFile(e.dataTransfer.files[i].path)
+            if (res !== '') {
+              self.codemirror.replaceSelection(`![image](${res})`)
+            } else {
+              window.showError('图片拖拽失败，请重试！')
+            }
+          }
+        }
+      },
       onToolBtnBold: function () {
         let selection = this.codemirror.getSelection()
         this.codemirror.replaceSelection(`**${selection}**`)
@@ -659,5 +695,66 @@
     overflow-y: auto;
     overflow-x: auto;
     position: fixed;
+  }
+
+  .gy-markdown-tip {
+    font-family: 'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',SimSun,sans-serif;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    color: #5e6d82;
+    line-height: 1.5em;
+  }
+
+  .gy-markdown-tip.tip1 {
+    padding: 8px 16px;
+    background-color: #ecf5ff;
+    border-radius: 4px;
+    border-left: #409EFF 5px solid;
+    margin: 20px 0;
+  }
+
+  .gy-markdown-tip.tip2 {
+    padding: 8px 16px;
+    background-color: #f0f9eb;
+    border-radius: 4px;
+    border-left: #67c23a 5px solid;
+    margin: 20px 0;
+  }
+
+  .gy-markdown-tip.tip3 {
+    padding: 8px 16px;
+    background-color: #f4f4f5;
+    border-radius: 4px;
+    border-left: #909399 5px solid;
+    margin: 20px 0;
+  }
+
+  .gy-markdown-tip.tip4 {
+    padding: 8px 16px;
+    background-color: #fdf6ec;
+    border-radius: 4px;
+    border-left: #e6a23c 5px solid;
+    margin: 20px 0;
+  }
+
+  .gy-markdown-tip.tip5 {
+    padding: 8px 16px;
+    background-color: #fef0f0;
+    border-radius: 4px;
+    border-left: #f56c6c 5px solid;
+    margin: 20px 0;
+  }
+
+  .gy-footnotes-div hr {
+    border: 0;
+    border-bottom: 1px dashed #cfcfcf;
+    background-color: white;
+    margin: 4px 0;
+  }
+
+  .gy-footnotes-div a {
+    color: #08c;
+    text-decoration: none;
   }
 </style>
