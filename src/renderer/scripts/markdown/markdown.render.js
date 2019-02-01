@@ -64,6 +64,19 @@ MarkdownRenderer.prototype.customStyle = function () {
 }
 
 /**
+ * 解析fontAwesome图标
+ */
+MarkdownRenderer.prototype.fontAwesome = function () {
+  let isFontAwesome = /:(fa-([\w]+)(-(\w+)){0,}):/.test(_text)
+  if (isFontAwesome) {
+    _text = _text.replace(/:(fa-([\w]+)(-(\w+)){0,}):/g, function (str, key) {
+      return `<i class="fa ${key} gy-emoji"></i>`
+    })
+  }
+  return this
+}
+
+/**
  * 解析脚标：示例[^1] and [^1]: XXX
  */
 MarkdownRenderer.prototype.footnote = function () {

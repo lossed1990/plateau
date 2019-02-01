@@ -40,7 +40,6 @@ FootnoteRenderer.prototype.init = function () {
  * 文内标记直接返回；脚标描述内容缓存，供后期一并获取；
  */
 FootnoteRenderer.prototype.render = function (text) {
-  console.log('footnote', text)
   let isFootnoteFlag = /\[\^(((?!(\[|\])).)*)\]/.test(text)
   let isFootnoteContent = /\[\^(.*)\]:(.*)$/.test(text)
   if (isFootnoteFlag && !isFootnoteContent) {
