@@ -1,7 +1,7 @@
 <template>
   <div id="gy_edit_component" @keyup.ctrl.83="onSave">
     <div v-if=showFileListBar class="gy-filelistbar-div" :style="{ width: fileListBarWidth + 'px' }">
-      <gy-edit-filelistbar ref="filelistbar" :barwidth=fileListBarWidth @show-menu="onShowMenu">
+      <gy-edit-filelistbar ref="filelistbar" :barwidth=fileListBarWidth :outlinehtml=outlinehtml @show-menu="onShowMenu">
       </gy-edit-filelistbar>
     </div>
     <div v-if=showFileListBar class="gy-editsplit-div" v-bind:style="{ left: editsplitLeft + 'px' }" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>
@@ -68,7 +68,7 @@
         v-bind:style="{ 'width': previewLeft - editsplitLeft - 4 + 'px'}"
       />
       <div class="gy-previewsplit-div" v-bind:style="{ 'left': previewLeft + 'px'}" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>  
-      <div class="gy-edit-preview markdown-body" v-bind:style="{ 'left': previewLeft + 4 + 'px'}" v-html="input">
+      <div class="gy-edit-preview markdown-body" v-bind:style="{ 'left': previewLeft + 4 + 'px'}" v-html="inputhtml">
       </div>
     </div>
     <gy-menu :menus="filelistmenus" @click-menu="onClickFileListMenu"></gy-menu>
@@ -94,6 +94,7 @@
   import editorOptions from '@/scripts/editor.js'
   import { debounce } from 'lodash'
   import { compiledMarkdown } from '@/scripts/markdown.js'
+  import _markdownRender from '@/scripts/markdown/markdown.render.js'
   import mermaid from 'mermaid'
   import { mapState } from 'vuex'
   import ComponentMenu from './common/Menu'
@@ -102,7 +103,7 @@
 
   // 左侧工具栏（文件、大纲）
   var ComponentFileListBar = {
-    props: ['barwidth'],
+    props: ['barwidth', 'outlinehtml'],
     template: `
       <div class="gy-edit-filelistbar-div">
         <div class="gy-edit-filelistbartab-div">
@@ -133,8 +134,7 @@
             </div>
           </div>
         </div>
-        <div v-if="name === 'outline'" class="gy-edit-filelistbarpanel-div">
-          outline
+        <div v-if="name === 'outline'" class="gy-edit-filelistbarpanel-div" v-html="outlinehtml">
         </div>
       </div>
     `,
@@ -234,7 +234,8 @@
         fileListBarWidth: 200,
         previewLeft: 800,
         code: '',
-        input: '',
+        inputhtml: '',
+        outlinehtml: '',
         editorOptions,
         filelistmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1},
         headermenus: {visible: false, left: 200, top: 200, items: ['一级标题', '二级标题', '三级标题', '四级标题', '五级标题', '六级标题'], userdata: 1},
@@ -347,7 +348,8 @@
         this.code = newCode
         let workspace = _configHelper.getWorkspace().workspace
         if (workspace !== '') {
-          this.input = compiledMarkdown(newCode, workspace)
+          this.inputhtml = compiledMarkdown(newCode, workspace)
+          this.outlinehtml = _markdownRender.getOutline()
         } else {
           console.error('compiledMarkdown failed, worksapce is null')
         }
@@ -614,6 +616,36 @@
 
   .gy-addfile-btn:active {
     background-color: rgb(200, 200, 200);
+  }
+
+  .gy-edit-filelistbarpanel-div ul {
+    padding: 0px;
+    margin: 0px;
+  }
+
+  .gy-toc-li {
+    padding: 0px;
+    margin: 0px;
+    height: 28px;
+    line-height: 28px;
+  }
+
+  .gy-toc-li:hover {
+    background-color: rgb(248,248,248);
+  }
+
+  .gy-toc-li a {
+    padding: 0px 4px 0px 8px;
+    text-decoration:none;
+    display: flex;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    color: rgb(119, 119, 119);
+  }
+
+  .gy-toc-li a:hover{
+    text-decoration:none;
   }
 
   ::-webkit-scrollbar {

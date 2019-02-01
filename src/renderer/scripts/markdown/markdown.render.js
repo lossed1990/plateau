@@ -122,6 +122,13 @@ MarkdownRenderer.prototype.replaceToc = function (text) {
 }
 
 /**
+ * 获取文章大纲
+ */
+MarkdownRenderer.prototype.getOutline = function () {
+  return _tocRenderer.getToc()
+}
+
+/**
  * 解析自定义粘贴及拖拽的图片的相对路径
  */
 MarkdownRenderer.prototype.imagePath = function (href, workspace) {

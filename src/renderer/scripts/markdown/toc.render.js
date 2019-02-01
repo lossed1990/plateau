@@ -49,45 +49,6 @@ TOCRenderer.prototype.subTocRender = function (text) {
  * 获取目录内容转换后的html
  */
 TOCRenderer.prototype.getToc = function () {
-  // 网上一种方式，后面优化处理
-  // let levelStack = []
-  // let result = ''
-
-  // const addStartUL = () => { result += '<ul>' }
-  // const addEndUL = () => { result += '</ul>\n' }
-  // const addLI = (anchor, text) => { result += '<li style="list-style: none;"><a href="#' + anchor + '">' + text + '<a></li>\n' }
-
-  // _toc.forEach(function (item) {
-  //   let levelIndex = levelStack.indexOf(item.level)
-  //   if (levelIndex === -1) {
-  //     // 没有找到相应level的ul标签，则将li放入新增的ul中
-  //     levelStack.unshift(item.level)
-  //     addStartUL()
-  //     addLI(item.anchor, item.text)
-  //   } else if (levelIndex === 0) {
-  //     // 找到了相应level的ul标签，并且在栈顶的位置则直接将li放在此ul下
-  //     addLI(item.anchor, item.text)
-  //   } else {
-  //     // 找到了相应level的ul标签，但是不在栈顶位置，需要将之前的所有level出栈并且打上闭合标签，最后新增li
-  //     while (levelIndex--) {
-  //       levelStack.shift()
-  //       addEndUL()
-  //     }
-  //     addLI(item.anchor, item.text)
-  //   }
-  // })
-
-  // // 如果栈中还有level，全部出栈打上闭合标签
-  // while (levelStack.length) {
-  //   levelStack.shift()
-  //   addEndUL()
-  // }
-
-  // // 清理先前数据供下次使用
-  // _toc = []
-  // _index = 0
-  // return result
-
   if (_toc.length === 0) {
     return ''
   }
@@ -95,13 +56,10 @@ TOCRenderer.prototype.getToc = function () {
   let result = '<ul>'
   _toc.forEach(function (item) {
     let space = '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(item.level - 1)
-    result += `<li style="list-style: none;"><span>${space}</span><a href="#${item.anchor}">${item.text}<a></li>\n`
+    result += `<li class="gy-toc-li" style="list-style: none;"><a href="#${item.anchor}">${space + item.text}<a></li>\n`
   })
   result += '</ul>\n'
 
-  // 清理先前数据供下次使用
-  _toc = []
-  _index = 0
   return result
 }
 
@@ -111,7 +69,6 @@ TOCRenderer.prototype.replaceSubToc = function (text) {
     text = text.replace(item.key, self.getSubToc(item.parentIndex, item.parentLevel))
   })
 
-  _subToc = []
   return text
 }
 
