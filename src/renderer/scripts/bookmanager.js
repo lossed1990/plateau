@@ -83,7 +83,7 @@ ConfigHelper.prototype.saveWorkspace = function (path) {
 
   let configPath = _path.join(__dirname, '../../config/config.json')
   _config.workspace = path
-  _workspace = path.replace(/\\/g, `/`)
+  _workspace = path
   _fs.writeFileSync(configPath, JSON.stringify(_config))
 }
 

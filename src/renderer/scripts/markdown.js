@@ -1,179 +1,48 @@
 import marked from 'marked'
-import katex from 'katex'
 import hljs from 'highlight.js'
+import _markdownRenderer from './markdown/markdown.render.js'
 import 'highlight.js/styles/googlecode.css'
 
 let _isInit = false
 let _workSpace = ''
-let _tocObj
-let _footnoteFlagIndex = 0
-let _footNotesObj
-
-function katexRender (text) {
-  // 解决部分字符解析问题 https://katex.org/docs/error.html
-  text = text.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>')
-  return katex.renderToString(text, {throwOnError: false})
-}
 
 function initMarkdown () {
   let markedRenderer = new marked.Renderer()
-  _tocObj = {
-    toc: [],
-    index: 0,
-    add: function (text, level) {
-      var anchor = `#toc${level}${++this.index}`
-      this.toc.push({ anchor: anchor, level: level, text: text })
-      return anchor
-    },
-    toHtml: function () {
-      let levelStack = []
-      let result = ''
-      const addStartUL = () => { result += '<ul>' }
-      const addEndUL = () => { result += '</ul>\n' }
-      const addLI = (anchor, text) => { result += '<li><a href="#' + anchor + '">' + text + '<a></li>\n' }
-
-      this.toc.forEach(function (item) {
-        let levelIndex = levelStack.indexOf(item.level)
-        if (levelIndex === -1) {
-          // 没有找到相应level的ul标签，则将li放入新增的ul中
-          levelStack.unshift(item.level)
-          addStartUL()
-          addLI(item.anchor, item.text)
-        } else if (levelIndex === 0) {
-          // 找到了相应level的ul标签，并且在栈顶的位置则直接将li放在此ul下
-          addLI(item.anchor, item.text)
-        } else {
-          // 找到了相应level的ul标签，但是不在栈顶位置，需要将之前的所有level出栈并且打上闭合标签，最后新增li
-          while (levelIndex--) {
-            levelStack.shift()
-            addEndUL()
-          }
-          addLI(item.anchor, item.text)
-        }
-      })
-
-      // 如果栈中还有level，全部出栈打上闭合标签
-      while (levelStack.length) {
-        levelStack.shift()
-        addEndUL()
-      }
-
-      // 清理先前数据供下次使用
-      this.toc = []
-      this.index = 0
-      return result
-    }
-  }
-
-  _footNotesObj = {
-    footnote: [],
-    index: 0,
-    add: function (flag, text) {
-      var anchor = `<span id="fn:${flag}">[${++this.index}] </span>${text}<a href="#fnref:${flag}" title="回到文稿" class="gy-footnote fa fa-hand-o-up"></a><br/>`
-      this.footnote.push(anchor)
-    },
-    toHtml: function () {
-      if (this.footnote.length === 0) {
-        return ''
-      }
-
-      let result = '<div class="gy-footnotes-div"><hr><small>'
-      this.footnote.forEach(function (item) {
-        result += item
-      })
-      result += '</small></div>'
-
-      // 清理先前数据供下次使用
-      this.footnote = []
-      this.index = 0
-      return result
-    }
-  }
 
   markedRenderer.heading = function (text, level, raw) {
-    // 解析标题 H1~H6
-    let anchor = _tocObj.add(text, level)
-    return `<a id=${anchor} class="anchor-fix"></a><h${level}>${text}</h${level}>\n`
+    return _markdownRenderer.head(text, level)
   }
 
   markedRenderer.image = function (href, title, text) {
-    // 自定义解析粘贴及拖拽的图片的相对路径
-    let isCustomPath = /\*/g.test(href)
-    if (isCustomPath) {
-      href = href.replace(/\*/g, `${_workSpace}/.plateau/image`)
-      let out = '<img src="' + href + '" alt="' + text + '"'
-      if (title) {
-        out += ' title="' + title + '"'
-      }
-      out += marked.options.xhtml ? '/>' : '>'
-      return out
-    }
-
-    // 默认解析
+    arguments[0] = _markdownRenderer.imagePath(href, _workSpace)
     return marked.Renderer.prototype.image.apply(this, arguments)
   }
 
   markedRenderer.paragraph = function (text) {
-    let arrayLine = text.split('\n')
-    console.log('isBr is true', arrayLine)
+    let arrayLines = text.split('\n')
     let result = ''
 
-    arrayLine.forEach(function (item) {
-      // 解析TOC
-      let isToc = /^\[TOC\]$/.test(item)
-      if (isToc) {
-        result += _tocObj.toHtml()
-        return
-      }
+    arrayLines.forEach(function (item) {
+      arguments[0] = _markdownRenderer.set(item)
+        .underline()
+        .customStyle()
+        .footnote()
+        .katex()
+        .subtoc()
+        .get()
 
-      // 解析脚标
-      let isFootnoteFlag = /\[\^(((?!(\[|\])).)*)\]/.test(item)
-      let isFootnoteContent = /^\[\^(.*)\]:(.*)$/.test(item)
-      if (isFootnoteFlag && !isFootnoteContent) {
-        item = item.replace(/\[\^(((?!(\[|\])).)*)\]/g, function (str, key) {
-          return `<sup><a href="#fn:${key}" id="fnref:${key}" title="查看注脚" class="gy-footnote-flag">[${++_footnoteFlagIndex}]</a></sup>`
-        })
-      }
-
-      if (isFootnoteContent) {
-        let index = item.lastIndexOf(']:')
-        let flag = item.substring(2, index)
-        let info = item.substring(index + 2, item.length)
-        _footNotesObj.add(flag, info)
-        result += ''
-        return
-      }
-
-      // 解析数学公式
-      let isTeXInline = /\$\$(.*)\$\$/g.test(item)
-      let isTeXLine = /^\$\$(.*)\$\$$/.test(item)
-
-      if (!isTeXLine && isTeXInline) {
-        item = item.replace(/(\$\$([^$]*)\$\$)+/g, function (str, key) {
-          return katexRender(key.replace(/\$/g, ''))
-        })
-      } else if (isTeXLine) {
-        let katexText = katexRender(text.replace(/\$/g, ''))
-        result += `<p>${katexText}</p>\n`
-        return
-      }
-
-      // 默认解析
-      arguments[0] = item
       result += marked.Renderer.prototype.paragraph.apply(this, arguments)
     })
-
     return result
   }
 
   markedRenderer.code = function (code, lang, escaped) {
     // 通过katex库，支持数学公式
     if (lang === 'math' || lang === 'latex' || lang === 'katex') {
-      let katexText = katexRender(code)
-      return `<p>${katexText}</p>\n`
+      return _markdownRenderer.codeKatex(code)
     }
 
-    // if (lang === 'primary' || lang === 'success' || lang === 'info' || lang === 'warning' || lang === 'danger') {
+    // 解析自定义注释提示行
     if (lang === 'tip1' || lang === 'tip2' || lang === 'tip3' || lang === 'tip4' || lang === 'tip5') {
       code = code.replace(/\n/g, `<br/>`)
       return `<div class="gy-markdown-tip ${lang}">${code}</div>\n`
@@ -209,11 +78,20 @@ function initMarkdown () {
   }
 
   markedRenderer.listitem = function (text) {
-    // 优化 - [ ] 和 -[x]的解析，去掉解析后li的样式
-    if (/<input.*disabled="" type="checkbox">/.test(text)) {
+    text = _markdownRenderer.set(text)
+      .underline()
+      .customStyle()
+      .footnote()
+      .katex()
+      .get()
+
+    // 解析todo列表：优化 - [ ] 和 -[x]的解析，去掉解析后li的样式
+    let isTodoList = /<input.*disabled="" type="checkbox">/.test(text)
+    if (isTodoList) {
       return '<li style="list-style: none;">' + text + '</li>\n'
     }
 
+    arguments[0] = text
     return marked.Renderer.prototype.listitem.apply(this, arguments)
   }
 
@@ -238,7 +116,7 @@ function initMarkdown () {
 
 export const compiledMarkdown = (content, workspace) => {
   _workSpace = workspace
-  _footnoteFlagIndex = 0
+  _markdownRenderer.init()
 
   if (!_isInit) {
     initMarkdown()
@@ -248,7 +126,8 @@ export const compiledMarkdown = (content, workspace) => {
   let result = ''
   if (content && content.length > 0) {
     try {
-      result = marked(content) + _footNotesObj.toHtml()
+      result = marked(content) + _markdownRenderer.getFootnote()
+      result = _markdownRenderer.replaceToc(result)
     } catch (e) {
       result = ''
       console.log('marked exception', e)

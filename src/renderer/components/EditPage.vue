@@ -704,46 +704,34 @@
     font-size: 14px;
     color: #5e6d82;
     line-height: 1.5em;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin: 20px 0;
   }
 
   .gy-markdown-tip.tip1 {
-    padding: 8px 16px;
     background-color: #ecf5ff;
-    border-radius: 4px;
     border-left: #409EFF 5px solid;
-    margin: 20px 0;
   }
 
   .gy-markdown-tip.tip2 {
-    padding: 8px 16px;
     background-color: #f0f9eb;
-    border-radius: 4px;
     border-left: #67c23a 5px solid;
-    margin: 20px 0;
   }
 
   .gy-markdown-tip.tip3 {
-    padding: 8px 16px;
     background-color: #f4f4f5;
-    border-radius: 4px;
     border-left: #909399 5px solid;
-    margin: 20px 0;
   }
 
   .gy-markdown-tip.tip4 {
-    padding: 8px 16px;
     background-color: #fdf6ec;
-    border-radius: 4px;
     border-left: #e6a23c 5px solid;
-    margin: 20px 0;
   }
 
   .gy-markdown-tip.tip5 {
-    padding: 8px 16px;
     background-color: #fef0f0;
-    border-radius: 4px;
     border-left: #f56c6c 5px solid;
-    margin: 20px 0;
   }
 
   .gy-footnotes-div hr {
