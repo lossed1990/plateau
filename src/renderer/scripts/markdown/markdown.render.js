@@ -109,8 +109,8 @@ MarkdownRenderer.prototype.codeKatex = function (code) {
 /**
  * 解析标题：将所有标题缓存，用以生成目录
  */
-MarkdownRenderer.prototype.head = function (text, level) {
-  return _tocRenderer.headRender(text, level)
+MarkdownRenderer.prototype.head = function (text, level, line) {
+  return _tocRenderer.headRender(text, level, line)
 }
 
 /**

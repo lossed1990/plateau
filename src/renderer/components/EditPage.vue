@@ -65,11 +65,12 @@
         @input="onEditorCodeChange"
         @paste="onPaste"
         @drop="onDrop"
+        @scroll="onScroll"
         v-bind:style="{ 'width': previewLeft - editsplitLeft - 4 + 'px'}"
       />
       <div class="gy-previewsplit-div" v-bind:style="{ 'left': previewLeft + 'px'}" @pointerdown="onMouseDown" @pointerup="onMouseUp"></div>  
-      <div class="gy-edit-preview markdown-body" v-bind:style="{ 'left': previewLeft + 4 + 'px'}" v-html="inputhtml">
-      </div>
+      <div class="gy-edit-preview markdown-body" v-bind:style="{ 'left': previewLeft + 4 + 'px'}" v-html="inputhtml"></div>
+      <div v-if=isBackTopVisible class="gy-back-top fa fa-arrow-up" @click="onBackTop"></div>
     </div>
     <gy-menu :menus="filelistmenus" @click-menu="onClickFileListMenu"></gy-menu>
     <gy-menu :menus="headermenus" @click-menu="onClickHeaderMenu"></gy-menu>
@@ -233,10 +234,13 @@
       return {
         fileListBarWidth: 200,
         previewLeft: 800,
+        isBackTopVisible: false,
         code: '',
         inputhtml: '',
         outlinehtml: '',
         editorOptions,
+        isScrollPreviewDiv: false,
+        arrayScrollFlags: [],
         filelistmenus: {visible: false, left: 200, top: 200, items: ['删除'], userdata: 1},
         headermenus: {visible: false, left: 200, top: 200, items: ['一级标题', '二级标题', '三级标题', '四级标题', '五级标题', '六级标题'], userdata: 1},
         inputLinkDialogVisible: false,
@@ -249,6 +253,25 @@
     updated: function () {
       // 页面内容更新后，重新渲染mermaid图表
       mermaid.init(undefined, '.mermaid')
+      // 更新显示返回顶部按钮
+      let elem = document.querySelector('.gy-edit-preview')
+      if (elem && elem.scrollHeight > elem.offsetHeight) {
+        this.isBackTopVisible = true
+      } else {
+        this.isBackTopVisible = false
+      }
+      // 构建滚动条索引表
+      let arrayFlags = document.querySelectorAll('.gy-edit-preview [source-line]')
+      let self = this
+      arrayFlags.forEach(function (item) {
+        let info = {
+          sourceLine: parseInt(item.getAttribute('source-line')),
+          previewScrollTop: item.offsetTop
+        }
+        if (info.sourceLine !== 0) {
+          self.arrayScrollFlags.push(info)
+        }
+      })
     },
     components: {
       'gy-edit-filelistbar': ComponentFileListBar,
@@ -258,6 +281,33 @@
       this.$store.dispatch('showStatusBar', true)
       this.$store.dispatch('showFileListBar', true)
       this.$store.dispatch('setFileListBarWidth', this.fileListBarWidth)
+    },
+    mounted () {
+      // 监听预览区scroll事件，同步滚动
+      let self = this
+      let elem = document.querySelector('.gy-edit-preview')
+      if (elem) {
+        elem.addEventListener('mouseenter', function (e) {
+          self.isScrollPreviewDiv = true
+        })
+
+        elem.addEventListener('mouseleave', function (e) {
+          self.isScrollPreviewDiv = false
+        })
+
+        elem.addEventListener('scroll', function (e) {
+          if (self.isScrollPreviewDiv) {
+            let indexFlag = self.arrayScrollFlags.findIndex((item) => item.previewScrollTop >= e.target.scrollTop)
+            if (indexFlag !== -1) {
+              let totalHeight = 0
+              for (let i = 0, len = self.arrayScrollFlags[indexFlag].sourceLine - 1; i < len; ++i) {
+                totalHeight += self.codemirror.getLineHandle(i).height
+              }
+              self.codemirror.scrollTo(0, totalHeight)
+            }
+          }
+        })
+      }
     },
     watch: {
       currentSelectBookFile: function (data) {
@@ -319,7 +369,6 @@
         }
       },
       onMouseUp: function (event) {
-        // console.log('onMouseUp')
         event.target.releasePointerCapture(event.pointerId)
         event.target.onpointermove = null
       },
@@ -384,6 +433,28 @@
               window.showError('图片拖拽失败，请重试！')
             }
           }
+        }
+      },
+      onScroll: function (cm) {
+        if (this.isScrollPreviewDiv) {
+          return
+        }
+
+        try {
+          // 计算当前顶端行号，同步滚动
+          let currentLine = 0
+          let scrollInfo = cm.getScrollInfo()
+          let offsetHeight = scrollInfo.top - 4 - cm.getLineHandle(currentLine).height
+          while (offsetHeight > 0) {
+            ++currentLine
+            offsetHeight -= cm.getLineHandle(currentLine).height
+          }
+
+          let indexFlag = this.arrayScrollFlags.findIndex((item) => item.sourceLine >= (currentLine + 1))
+          if (indexFlag !== -1) {
+            document.querySelector('.gy-edit-preview').scrollTop = this.arrayScrollFlags[indexFlag].previewScrollTop
+          }
+        } catch (e) {
         }
       },
       onToolBtnBold: function () {
@@ -457,6 +528,10 @@
             window.showError(`文件[${name}]读取失败！`)
           }
         })
+      },
+      onBackTop: function () {
+        document.querySelector('.gy-edit-preview').scrollTop = 0
+        this.codemirror.scrollTo(0, 0)
       }
     }
   }
@@ -727,6 +802,24 @@
     overflow-y: auto;
     overflow-x: auto;
     position: fixed;
+  }
+
+  .gy-back-top {
+    position: fixed;
+    bottom: 30px;
+    right: 10px;
+    background-color: #409EFF;
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    text-align: center;
+    line-height: 40px;
+    font-size: 24px;
+    color: #fff;
+  }
+
+  .gy-back-top:hover {
+    background-color: red;
   }
 
   .gy-markdown-tip {

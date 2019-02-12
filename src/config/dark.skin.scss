@@ -1,0 +1,63 @@
+$border-color:rgb(0, 56, 71);
+$content-color: rgb(0, 43, 54);
+$font-color: white;
+
+#app {
+    background-color: $border-color;
+}
+
+/* 左侧工具栏样式 */
+.gy-toolbar {
+    background-color: $border-color;
+}
+
+.gy-toolbar .el-button{
+    color: #fff;
+    background-color: $border-color;
+    border-color: $border-color;
+}
+
+/* 右侧内容区域样式 */
+.gy-container {
+    /* 边框颜色 */
+    background-color: $border-color;
+}
+
+.gy-header,
+.gy-main,
+.gy-footer {
+    /* 内容区背景色 */
+    background-color: $content-color;
+}
+
+.gy-header span {
+    /* 标题栏文字颜色 */
+    color: $font-color;
+}
+
+/* 标题栏按钮颜色 */
+.gy-header-btn {
+    color: white;
+}
+
+.gy-header-btn:hover {
+    color: red;
+}
+
+.gy-header-btn:focus {
+    color: white;
+}
+
+/* 底部状态栏样式 */
+.gy-container .el-footer {
+    color: rgb(130, 130, 130);
+}
+
+.gy-footer-btn {
+    background-color: rgb(0, 43, 54);
+    color: rgba(119, 119, 119, 1);
+}
+
+.gy-footer-btn:hover {
+    color: rgba(119, 119, 119, 0.8);
+}

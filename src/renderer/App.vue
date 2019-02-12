@@ -111,14 +111,9 @@
     margin: 0px auto;
     height: 100%;
     width: 100%;
-    background-color: white;
   }
   
   /* 左侧工具栏样式 */
-  .gy-toolbar {
-    background-color: #409EFF;
-  }
-  
   .gy-toolbar-top, 
   .gy-toolbar-bottom{
     margin: 7px;
@@ -136,13 +131,11 @@
   .gy-toolbtn {
     width: 26px;
     height: 26px;
-    color: white;
     font-size: 26px;
   }
 
   /* 右侧内容区域样式 */
   .gy-container {
-    background-color: rgb(237, 237, 237);
     padding: 1px;
   }
   
@@ -150,7 +143,6 @@
   .gy-main,
   .gy-footer {
     padding: 0px;
-    background-color: #FFFFFF;
   }
   
   /* 右侧标题栏样式 */
@@ -164,7 +156,6 @@
     height: 52px;
     line-height: 52px;
     font-size: 20px;
-    color: rgb(72, 72, 72);
     margin-left: 12px;
   }
   
@@ -173,21 +164,11 @@
     width: 32px;
     float: right;
     -webkit-app-region: no-drag;
-    color: rgb(148, 157, 182);
-  }
-  
-  .gy-header-btn:hover {
-    color: rgb(90 168 252);
-  }
-  
-  .gy-header-btn:focus {
-    color: rgb(148, 157, 182);
   }
   
   /* 底部状态栏样式 */
   .gy-container .el-footer {
     line-height: 24px;
-    color: rgb(130, 130, 130);
     font-size: 14px;
     /* background-color: rgba(64, 158, 255, 0.2); */
   }
@@ -199,12 +180,6 @@
   .gy-footer-btn {
     width: 24px;
     height: 24px;
-    background-color: white;
-    color: rgba(119, 119, 119, 1);
     border: 0px;
-  }
-
-  .gy-footer-btn:hover {
-    color: rgba(119, 119, 119, 0.8);
   }
 </style>

@@ -1,4 +1,4 @@
-import marked from 'marked'
+import marked from './markdown/marked.js'
 import hljs from 'highlight.js'
 import _markdownRenderer from './markdown/markdown.render.js'
 import 'highlight.js/styles/googlecode.css'
@@ -8,34 +8,6 @@ let _workSpace = ''
 
 function initMarkdown () {
   let markedRenderer = new marked.Renderer()
-
-  markedRenderer.heading = function (text, level, raw) {
-    return _markdownRenderer.head(text, level)
-  }
-
-  markedRenderer.image = function (href, title, text) {
-    arguments[0] = _markdownRenderer.imagePath(href, _workSpace)
-    return marked.Renderer.prototype.image.apply(this, arguments)
-  }
-
-  markedRenderer.paragraph = function (text) {
-    let arrayLines = text.split('\n')
-    let result = ''
-
-    arrayLines.forEach(function (item) {
-      arguments[0] = _markdownRenderer.set(item)
-        .underline()
-        .customStyle()
-        .fontAwesome()
-        .footnote()
-        .katex()
-        .subtoc()
-        .get()
-
-      result += marked.Renderer.prototype.paragraph.apply(this, arguments)
-    })
-    return result
-  }
 
   markedRenderer.code = function (code, lang, escaped) {
     // 通过katex库，支持数学公式
@@ -63,7 +35,8 @@ function initMarkdown () {
     }
 
     // 总代码行数
-    let rowCount = arguments[0].match(/\n/g).length + 1
+    let arrayLines = arguments[0].match(/\n/g)
+    let rowCount = arrayLines ? arrayLines.length + 1 : 1
     // 行号占位数
     let maxSpaceNumberCount = rowCount.toString().length
     let index = 1
@@ -95,6 +68,29 @@ function initMarkdown () {
 
     arguments[0] = text
     return marked.Renderer.prototype.listitem.apply(this, arguments)
+  }
+
+  markedRenderer.paragraph = function (text, line) {
+    let arrayLines = text.split('\n')
+    let result = ''
+
+    arrayLines.forEach(function (item) {
+      let resultText = _markdownRenderer.set(item)
+        .underline()
+        .customStyle()
+        .fontAwesome()
+        .footnote()
+        .katex()
+        .subtoc()
+        .get()
+      result += `<p source-line="${line}">${resultText}</p>\n`
+    })
+    return result
+  }
+
+  markedRenderer.image = function (href, title, text) {
+    arguments[0] = _markdownRenderer.imagePath(href, _workSpace)
+    return marked.Renderer.prototype.image.apply(this, arguments)
   }
 
   marked.setOptions({

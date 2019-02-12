@@ -20,11 +20,10 @@ TOCRenderer.prototype.init = function () {
 /**
  * 解析标题
  */
-TOCRenderer.prototype.headRender = function (text, level) {
+TOCRenderer.prototype.headRender = function (text, level, line) {
   var anchor = `#toc${level}${++_index}`
   _toc.push({anchor: anchor, level: level, text: text})
-  console.log('add', anchor)
-  return `<a id=${anchor} class="anchor-fix"></a><h${level}>${text}</h${level}>\n`
+  return `<a id=${anchor} class="anchor-fix"></a><h${level} source-line="${line}">${text}</h${level}>\n`
 }
 
 /**

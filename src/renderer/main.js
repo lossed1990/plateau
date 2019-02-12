@@ -10,6 +10,9 @@ import 'element-ui/lib/theme-chalk/index.css'
 import './assets/icon/iconfont.css'
 import 'vue-codemirror/node_modules/codemirror/lib/codemirror.css'
 import '../config/style.css'
+// 皮肤风格
+import '../config/default.skin.css'
+// import '../config/dark.skin.scss'
 // icon图标 后期统一扩展 https://blog.csdn.net/b376924098/article/details/78286880
 
 import App from './App'
@@ -17,7 +20,7 @@ import router from './router'
 import store from './store'
 
 Vue.use(Element)
-Vue.use(VueCodeMirror, {events: ['paste', 'drop']})
+Vue.use(VueCodeMirror, {events: ['paste', 'drop', 'scroll']})
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
