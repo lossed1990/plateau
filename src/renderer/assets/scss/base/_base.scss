@@ -1,0 +1,64 @@
+$fontFamily: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+  "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+
+/**
+ * 根据亮度值，修改颜色
+ * 亮度大于50%，减少颜色亮度；否则添加亮度
+ */
+@function changeColorByLightness($color, $per) {
+  @if (lightness($color) > 50%) {
+    @return darken($color, $per);
+  } @else {
+    @return lighten($color, $per);
+  }
+}
+
+/**
+ * 通用悬浮提示框样式
+ */
+.el-tooltip__popper[x-placement^="left"] .popper__arrow {
+  border-left-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="left"] .popper__arrow:after {
+  border-left-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="right"] .popper__arrow {
+  border-right-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="right"] .popper__arrow:after {
+  border-right-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="top"] .popper__arrow {
+  border-top-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="top"] .popper__arrow:after {
+  border-top-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="bottom"] .popper__arrow {
+  border-bottom-color: changeColorByLightness($mainBgColor, 18%);
+}
+.el-tooltip__popper[x-placement^="bottom"] .popper__arrow:after {
+  border-bottom-color: changeColorByLightness($mainBgColor, 18%);
+}
+.gy-tool-tip {
+  background: changeColorByLightness($mainBgColor, 18%) !important;
+}
+.el-tooltip__popper.is-dark {
+  color: $headerFontColor;
+}
+
+/**
+ * 通用滚动条样式
+ */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: changeColorByLightness($mainBgColor, 13%);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: changeColorByLightness($mainBgColor, 13%);
+}

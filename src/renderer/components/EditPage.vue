@@ -8,52 +8,52 @@
     <div class="gy-editcontainer-div" v-bind:style="{ 'margin-left': showFileListBar ? editMarginLeft + 'px' : '0px' }">
       <div class="gy-edit-tool">
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="粗体" placement="bottom">
+          <el-tooltip class="item" content="粗体" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-bold gy-edit-tool-btn" type="text" @click="onToolBtnBold"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="斜体" placement="bottom">
+          <el-tooltip class="item" content="斜体" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-italic gy-edit-tool-btn" type="text" @click="onToolBtnItalic"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="下划线" placement="bottom">
+          <el-tooltip class="item" content="下划线" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-underline gy-edit-tool-btn" type="text" @click="onToolBtnUnderline"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="删除线" placement="bottom">
+          <el-tooltip class="item" content="删除线" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-strikethrough gy-edit-tool-btn" type="text" @click="onToolBtnStrikethrough"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="标题" placement="bottom">
+          <el-tooltip class="item" content="标题" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-header gy-edit-tool-btn" type="text" @click="onToolBtnHeader($event)"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="无序列表" placement="bottom">
+          <el-tooltip class="item" content="无序列表" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-list-ul gy-edit-tool-btn" type="text" @click="onToolBtnListUl"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="有序列表" placement="bottom">
+          <el-tooltip class="item" content="有序列表" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-list-ol gy-edit-tool-btn" type="text" @click="onToolBtnListOl"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="引用" placement="bottom">
+          <el-tooltip class="item" content="引用" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-quote-left gy-edit-tool-btn" type="text" @click="onToolBtnQuoteleft"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="分割线" placement="bottom">
+          <el-tooltip class="item" content="分割线" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-minus gy-edit-tool-btn" type="text" @click="onToolBtnSplitLine"></button>
           </el-tooltip>
         </span>
         <span class="gy-edit-tool-left">
-          <el-tooltip class="item" effect="dark" content="链接" placement="bottom">
+          <el-tooltip class="item" content="链接" placement="bottom" popper-class="gy-tool-tip">
             <button class="fa fa-link gy-edit-tool-btn" type="text" @click="inputLinkDialogVisible = true"></button>
           </el-tooltip>
         </span>
@@ -92,6 +92,7 @@
 </template>
 
 <script>
+  import '../assets/scss/edit-page.scss'
   import editorOptions from '@/scripts/editor.js'
   import { debounce } from 'lodash'
   import { compiledMarkdown } from '@/scripts/markdown.js'
@@ -537,337 +538,3 @@
   }
 </script>
 
-<style>
-  #gy_edit_component {
-    /* float: left;
-    width: 100%;
-    height: calc(100vh - 78px);
-    background: tomato; */
-  }
-
-  .gy-filelistbar-div {
-    width: 196px;
-    height: calc(100vh - 52px);
-    /* background: cornflowerblue; */
-    overflow-y: auto;
-    position: fixed;
-  }
-
-  .gy-editsplit-div {
-    /* background: cornflowerblue; */
-    left: 196px;
-    border-left: 1px solid #EDEDED;
-    width: 3px;
-    height: calc(100vh - 52px);
-    position: fixed;
-    cursor: w-resize;
-  }
-
-  .gy-editcontainer-div {
-    margin-left: 200px;
-    background-color: greenyellow;
-  }
-
-  /* 
-  .gy-editcontainer-div footer {
-    position:fixed;
-    bottom:0px;
-    width:100%;
-    height:50px;
-  } */
-
-  .gy-edit-filelistbartab-div {
-    /* display: block; */
-    /* background-color: red; */
-    display: flex;
-    margin-bottom: 18px;
-  }
-
-  .gy-panel-tab {
-    width: 84px;
-    display: block;
-    text-align: center;
-    cursor: pointer;
-    margin-top: 8px;
-    /* background-color: blue; */
-  }
-
-  .gy-panel-tab-title {
-    font-size: 14px;
-    color: #606266;
-    height: 22px;
-  }
-
-  .gy-panel-tab-border {
-    height: 4px;
-  }
-
-  .gy-panel-tab-active .gy-panel-tab-title {
-    font-weight: bold;
-  }
-
-  .gy-panel-tab-active .gy-panel-tab-border {
-    background-color: black;
-  }
-
-  .gy-files-top-div {
-    padding: 5px 2px 5px 2px;
-    white-space: nowrap;
-    color: rgb(119, 119, 119)
-  }
-
-  .gy-files-list-div {
-    width: 196px;
-    height: calc(100vh - 142px);
-    /*background: tomato;*/
-    overflow-y: auto;
-    position: fixed;
-  }
-
-  .gy-files-top-div input{
-    width: calc(100% - 52px);
-    text-align: left;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    border: 0px;
-    outline: -webkit-focus-ring-color auto 5px;
-    outline-offset: -2px;
-    border: 0px;
-    outline: none;
-    cursor: default;
-    user-select: none;
-  }
-  
-  .gy-filename-div {
-    padding: 5px 10px 5px 10px;
-    white-space: nowrap;
-    color: rgb(119, 119, 119);
-    font-size: 14px;
-  }
-
-  .gy-filename-div-active,
-  .gy-filename-div-active .gy-filename-input{
-    background-color: rgb(238,238,238);
-  }
-
-  .gy-filename-div:hover,
-  .gy-filename-div:hover .gy-filename-input
-   {
-    background-color: rgb(248,248,248);
-  }
-
-  .gy-filename-input {
-    width: calc(100% - 6px);
-    text-align: left;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    border: 0px;
-    outline: -webkit-focus-ring-color auto 5px;
-    outline-offset: -2px;
-  }
-  
-  .gy-filename-input[readonly] {
-    border: 0px;
-    outline: none;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .gy-addfile-btn {
-    width: 30px;
-    height:26px;
-    margin-right: 0px;
-    background-color: white;
-    border: none;
-    outline:none;
-    cursor: pointer;
-  }
-
-  .gy-addfile-btn:hover {
-    background-color: rgb(238, 238, 238);
-  }
-
-  .gy-addfile-btn:active {
-    background-color: rgb(200, 200, 200);
-  }
-
-  .gy-edit-filelistbarpanel-div ul {
-    padding: 0px;
-    margin: 0px;
-  }
-
-  .gy-toc-li {
-    padding: 0px;
-    margin: 0px;
-    height: 28px;
-    line-height: 28px;
-  }
-
-  .gy-toc-li:hover {
-    background-color: rgb(248,248,248);
-  }
-
-  .gy-toc-li a {
-    padding: 0px 4px 0px 8px;
-    text-decoration:none;
-    display: flex;
-    display: block;
-    justify-content: center;
-    align-items: center;
-    color: rgb(119, 119, 119);
-  }
-
-  .gy-toc-li a:hover{
-    text-decoration:none;
-  }
-
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: rgb(212, 213, 214);
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(212, 213, 214);
-  }
-
-  .gy-edit-tool {
-    height: 32px;
-    background: rgb(235, 238, 240);
-  }
-
-  .gy-edit-tool-btn {
-    margin: 0px 1px 0px 0px;
-    width: 28px;
-    height: 32px;
-    background-color: rgb(235, 238, 240);
-    color: rgba(119, 119, 119, 1);
-    border: 0px;
-  }
-
-  .gy-edit-tool-btn:hover {
-    color: rgba(119, 119, 119, 0.8);
-    background-color: rgb(247, 247, 247);;
-  }
-
-  .vue-codemirror {
-    background-color: rgb(59, 174, 250);
-    font-size: 18px;
-    font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
-    color: #606266;
-    /* max-width: 800px;
-    position: relative;
-    margin: 0 auto;*/
-    width: auto;
-    height: calc(100vh - 110px);
-    overflow-y: auto;
-    position: fixed;
-  }
-
-  .CodeMirror {
-    height: 100%;
-  }
-  
-  .CodeMirror .CodeMirror-lines {
-    line-height: 32px;
-  }
-  
-  .CodeMirror-cursor {
-    background: #606266;
-  }
-
-  .CodeMirror .CodeMirror-gutters {
-    border-right: 0px;
-  }
-
-  .gy-previewsplit-div {
-    /* background: cornflowerblue; */
-    left: 596px;
-    border-left: 1px solid #EDEDED;
-    width: 3px;
-    height: calc(100vh - 110px);
-    position: fixed;
-    cursor: w-resize;
-  }
-
-  .gy-edit-preview {
-    right: 0px;
-    width: auto;
-    height: calc(100vh - 110px);
-    overflow-y: auto;
-    overflow-x: auto;
-    position: fixed;
-  }
-
-  .gy-back-top {
-    position: fixed;
-    bottom: 30px;
-    right: 10px;
-    background-color: #409EFF;
-    width: 40px;
-    height: 40px;
-    border-radius: 6px;
-    text-align: center;
-    line-height: 40px;
-    font-size: 24px;
-    color: #fff;
-  }
-
-  .gy-back-top:hover {
-    background-color: red;
-  }
-
-  .gy-markdown-tip {
-    font-family: 'Helvetica Neue',Helvetica,'PingFang SC','Hiragino Sans GB','Microsoft YaHei',SimSun,sans-serif;
-    font-weight: 400;
-    -webkit-font-smoothing: antialiased;
-    font-size: 14px;
-    color: #5e6d82;
-    line-height: 1.5em;
-    padding: 8px 16px;
-    border-radius: 4px;
-    margin: 20px 0;
-  }
-
-  .gy-markdown-tip.tip1 {
-    background-color: #ecf5ff;
-    border-left: #409EFF 5px solid;
-  }
-
-  .gy-markdown-tip.tip2 {
-    background-color: #f0f9eb;
-    border-left: #67c23a 5px solid;
-  }
-
-  .gy-markdown-tip.tip3 {
-    background-color: #f4f4f5;
-    border-left: #909399 5px solid;
-  }
-
-  .gy-markdown-tip.tip4 {
-    background-color: #fdf6ec;
-    border-left: #e6a23c 5px solid;
-  }
-
-  .gy-markdown-tip.tip5 {
-    background-color: #fef0f0;
-    border-left: #f56c6c 5px solid;
-  }
-
-  .gy-footnotes-div hr {
-    border: 0;
-    border-bottom: 1px dashed #cfcfcf;
-    background-color: white;
-    margin: 4px 0;
-  }
-
-  .gy-footnotes-div a {
-    color: #08c;
-    text-decoration: none;
-  }
-</style>

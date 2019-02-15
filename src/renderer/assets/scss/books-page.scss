@@ -1,0 +1,13 @@
+@import 'base/common';
+
+body[theme="dark"] {
+  @import 'skin/dark';
+  @import 'base/base';
+  @import 'module/books-page';
+}
+
+body[theme="light"] {
+  @import 'skin/light';
+  @import 'base/base';
+  @import 'module/books-page';
+}

@@ -1,0 +1,39 @@
+.gy-menu {
+  position: fixed;
+  top: 200px;
+  left: 140px;
+  width: auto;
+  min-width: 180px;
+  z-index: 9999;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+  background-clip: padding-box;
+  list-style-type: none;
+  margin: 0;
+  padding: 4px 0px 4px 0px;
+  background-color: changeColorByLightness($mainBgColor, 2%);
+}
+
+.gy-menu-item {
+  list-style-type: none;
+  font-family: $fontFamily;
+  font-size: 12px;
+  color: $headerFontColor;
+  padding: 4px 4px 4px 24px;
+  cursor: default;
+  &:hover {
+    background-color: changeColorByLightness($mainBgColor, 7%);
+  }
+}
+
+.gy-menu-item-separation {
+  padding: 0;
+  margin: 4px 0px 4px 0px;
+  height: 1px;
+  background-color: changeColorByLightness($mainBgColor, 7%);
+  &:hover {
+    background-color: changeColorByLightness($mainBgColor, 7%);
+  }
+}

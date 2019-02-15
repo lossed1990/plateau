@@ -127,9 +127,10 @@ MarkdownRenderer.prototype.subtoc = function () {
 MarkdownRenderer.prototype.replaceToc = function (text) {
   text = _tocRenderer.replaceSubToc(text)
 
-  let isToc = /<p>\[TOC\]<\/p>/.test(text)
+  let isToc = /<p source-line="[0-9]*">\[TOC\]<\/p>/.test(text)
   if (isToc) {
-    text = text.replace(/<p>\[TOC\]<\/p>/g, _tocRenderer.getToc())
+    console.log('isToc', _tocRenderer.getToc())
+    text = text.replace(/<p source-line="[0-9]*">\[TOC\]<\/p>/g, _tocRenderer.getToc())
   }
   return text
 }

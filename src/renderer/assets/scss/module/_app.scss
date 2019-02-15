@@ -1,0 +1,102 @@
+#app {
+  margin: 0px auto;
+  height: 100%;
+  width: 100%;
+  background-color: $mainBgColor;
+}
+
+/* 左侧工具栏样式 */
+.gy-toolbar {
+  background-color: $mainMenuBarBgColor;
+}
+
+.gy-toolbar-top, 
+.gy-toolbar-bottom{
+  margin: 7px;
+}
+
+.gy-toolbar-top {
+  min-height: calc(100vh - 160px);
+  padding-top: 60px;
+}
+
+.gy-toolbar .el-button {
+  margin-left: 0px;
+  color: $mainMenuBarFontColor;
+  background-color: $mainMenuBarBgColor;
+  border-color: $mainMenuBarBgColor;
+  &:hover {
+    background-color: changeColorByLightness($mainMenuBarBgColor, 5%);
+    border-color: changeColorByLightness($mainMenuBarBgColor, 5%);
+  }
+}
+
+.gy-toolbtn {
+  width: 26px;
+  height: 26px;
+  font-size: 26px;
+}
+
+/* 右侧内容区域样式 */
+.gy-container {
+  padding: 1px 1px 1px 0px;
+  background-color: changeColorByLightness($mainBgColor, 7%);
+}
+
+.gy-header,
+.gy-main,
+.gy-footer {
+  padding: 0px;
+  background-color: $mainBgColor;
+}
+
+/* 右侧标题栏样式 */
+.gy-header {
+  border-bottom: 1px solid changeColorByLightness($mainBgColor, 7%);
+  height: 52px;
+  -webkit-app-region: drag;
+  span {
+    height: 52px;
+    line-height: 52px;
+    font-size: 20px;
+    margin-left: 12px;
+    color: $headerFontColor;
+  }
+}
+
+.gy-header-btn {
+  height: 52px;
+  width: 32px;
+  float: right;
+  -webkit-app-region: no-drag;
+  // color: rgb(148, 157, 182);
+  color: $headerFontColor;
+  &:hover {
+    color: changeColorByLightness($headerFontColor, 20%);
+  }
+  &:focus {
+    color: $headerFontColor;
+  }
+}
+
+/* 底部状态栏样式 */
+.gy-container .el-footer {
+  line-height: 24px;
+  font-size: 14px;
+  color: $headerFontColor;
+}
+
+.gy-footer-right {
+  float: right;
+}
+
+.gy-footer-btn {
+  width: 24px;
+  height: 24px;
+  border: 0px;
+  background-color: $mainBgColor;
+  color: $headerFontColor;
+  &:hover {
+    color: transparentize($headerFontColor, 0.2);
+  }
+}

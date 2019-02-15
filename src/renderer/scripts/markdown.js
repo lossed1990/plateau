@@ -9,6 +9,10 @@ let _workSpace = ''
 function initMarkdown () {
   let markedRenderer = new marked.Renderer()
 
+  markedRenderer.heading = function (text, level, raw, line) {
+    return _markdownRenderer.head(text, level, line)
+  }
+
   markedRenderer.code = function (code, lang, escaped) {
     // 通过katex库，支持数学公式
     if (lang === 'math' || lang === 'latex' || lang === 'katex') {

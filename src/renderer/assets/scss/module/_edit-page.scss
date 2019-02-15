@@ -1,0 +1,314 @@
+@import "markdown-preview";
+
+.gy-filelistbar-div {
+  width: 196px;
+  height: calc(100vh - 52px);
+  overflow-y: auto;
+  position: fixed;
+}
+
+.gy-editsplit-div {
+  left: 196px;
+  border-left: 1px solid changeColorByLightness($mainBgColor, 10%);
+  width: 3px;
+  height: calc(100vh - 52px);
+  position: fixed;
+  cursor: w-resize;
+}
+
+.gy-editcontainer-div {
+  font-family: $fontFamily;
+  margin-left: 200px;
+}
+
+/**
+ * 左侧文件列表风格
+ */
+// 顶部tab风格
+.gy-edit-filelistbartab-div {
+  display: flex;
+  margin-bottom: 18px;
+  .gy-panel-tab {
+    font-family: $fontFamily;
+    width: 84px;
+    margin-top: 8px;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    .gy-panel-tab-title {
+      height: 22px;
+      font-size: 14px;
+      color: $headerFontColor;
+    }
+    .gy-panel-tab-border {
+      height: 4px;
+    }
+  }
+
+  .gy-panel-tab-active {
+    .gy-panel-tab-title {
+      font-weight: bold;
+    }
+    .gy-panel-tab-border {
+      background-color: $headerFontColor;
+    }
+  }
+}
+
+// 当前选择文件夹面板风格
+.gy-files-top-div {
+  padding: 5px 2px 5px 2px;
+  white-space: nowrap;
+  color: $headerFontColor;
+  input {
+    font-family: $fontFamily;
+    width: calc(100% - 52px);
+    text-align: left;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    border: 0px;
+    outline: -webkit-focus-ring-color auto 5px;
+    outline-offset: -2px;
+    border: 0px;
+    outline: none;
+    cursor: default;
+    user-select: none;
+    &[readonly] {
+      color: $headerFontColor;
+      background-color: $mainBgColor;
+    }
+  }
+  .gy-addfile-btn {
+    width: 30px;
+    height: 26px;
+    margin-right: 0px;
+    background-color: $mainBgColor;
+    color: $headerFontColor;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    &:hover {
+      background-color: changeColorByLightness($mainBgColor, 5%);
+    }
+    &:active {
+      background-color: changeColorByLightness($mainBgColor, 5%);
+    }
+  }
+}
+
+// 文件列表风格
+.gy-files-list-div {
+  width: 196px;
+  height: calc(100vh - 142px);
+  overflow-y: auto;
+  position: fixed;
+  .gy-filename-div {
+    padding: 5px 10px 5px 10px;
+    white-space: nowrap;
+    color: $headerFontColor;
+    font-size: 14px;
+    &:hover {
+      background-color: changeColorByLightness($mainBgColor, 5%);
+      .gy-filename-input {
+        background-color: changeColorByLightness($mainBgColor, 5%);
+      }
+    }
+    .gy-filename-input {
+      font-family: $fontFamily;
+      width: calc(100% - 6px);
+      text-align: left;
+      background-color: $mainBgColor;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      border: 0px;
+      // outline: -webkit-focus-ring-color auto 5px;
+      outline-offset: -2px;
+      color: $headerFontColor;
+      &[readonly] {
+        border: 0px;
+        outline: none;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+  }
+  .gy-filename-div-active {
+    background-color: changeColorByLightness($mainBgColor, 10%);
+    .gy-filename-input {
+      background-color: changeColorByLightness($mainBgColor, 10%);
+    }
+  }
+}
+
+// 文件大纲列表风格
+.gy-edit-filelistbarpanel-div {
+  height: calc(100vh - 106px);
+  overflow-y: auto;
+  ul {
+    padding: 0px;
+    margin: 0px;
+  }
+  .gy-toc-li {
+    padding: 0px;
+    margin: 0px;
+    height: 28px;
+    line-height: 28px;
+    &:hover {
+      background-color: changeColorByLightness($mainBgColor, 10%);
+    }
+    a {
+      font-family: $fontFamily;
+      padding: 0px 4px 0px 8px;
+      text-decoration: none;
+      display: flex;
+      display: block;
+      justify-content: center;
+      align-items: center;
+      color: $headerFontColor;
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+}
+
+/**
+ * 右侧功能按钮区风格
+ */
+.gy-edit-tool {
+  height: 32px;
+  background: changeColorByLightness($mainBgColor, 5%);
+  .gy-edit-tool-btn {
+    margin: 0px 1px 0px 0px;
+    width: 28px;
+    height: 32px;
+    background-color: changeColorByLightness($mainBgColor, 5%);
+    color: $headerFontColor;
+    border: 0px;
+    &:hover {
+      background-color: changeColorByLightness($mainBgColor, 15%);
+    }
+  }
+}
+
+/**
+ * 编辑区风格
+ */
+.vue-codemirror {
+  font-size: 18px;
+  width: auto;
+  height: calc(100vh - 110px);
+  overflow-y: auto;
+  position: fixed;
+  .CodeMirror {
+    height: 100%;
+    background-color: $mainBgColor;
+    color: $headerFontColor;
+    .CodeMirror-lines {
+      line-height: 32px;
+    }
+    .CodeMirror-gutters {
+      border-right: 0px;
+      background-color: changeColorByLightness($mainBgColor, 10%);
+      color: changeColorByLightness($headerFontColor, 10%);
+    }
+    .CodeMirror-cursors {
+      .CodeMirror-cursor {
+        // 光标颜色
+        border-left: 2px solid changeColorByLightness($mainBgColor, 20%);
+      }
+    }
+    // .CodeMirror-linenumbers {
+    //   // background-color: changeColorByLightness($mainBgColor, 10%);
+    //   // color: changeColorByLightness($headerFontColor, 10%);
+    // }
+  }
+}
+
+/**
+ * 分割栏风格
+ */
+.gy-previewsplit-div {
+  background: $mainBgColor;
+  left: 596px;
+  border-left: 1px solid changeColorByLightness($mainBgColor, 10%);
+  width: 3px;
+  height: calc(100vh - 110px);
+  position: fixed;
+  cursor: w-resize;
+}
+
+/**
+ * 预览区风格
+ */
+.gy-edit-preview {
+  right: 0px;
+  width: auto;
+  height: calc(100vh - 110px);
+  overflow-y: auto;
+  overflow-x: auto;
+  position: fixed;
+}
+
+/**
+ * 返回顶部按钮风格
+ */
+.gy-back-top {
+  position: fixed;
+  bottom: 30px;
+  right: 10px;
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  text-align: center;
+  line-height: 40px;
+  font-size: 24px;
+  background-color: $mainMenuBarBgColor;
+  color: $mainMenuBarFontColor;
+  &:hover {
+    background-color: changeColorByLightness($mainMenuBarBgColor, 5%);
+  }
+}
+
+/**
+ * 自定义提示标签解析后风格
+ */
+.gy-markdown-tip {
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", SimSun, sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5em;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin: 20px 0;
+  color: #5e6d82;
+}
+
+.gy-markdown-tip.tip1 {
+  background-color: #ecf5ff;
+  border-left: #409eff 5px solid;
+}
+
+.gy-markdown-tip.tip2 {
+  background-color: #f0f9eb;
+  border-left: #67c23a 5px solid;
+}
+
+.gy-markdown-tip.tip3 {
+  background-color: #f4f4f5;
+  border-left: #909399 5px solid;
+}
+
+.gy-markdown-tip.tip4 {
+  background-color: #fdf6ec;
+  border-left: #e6a23c 5px solid;
+}
+
+.gy-markdown-tip.tip5 {
+  background-color: #fef0f0;
+  border-left: #f56c6c 5px solid;
+}

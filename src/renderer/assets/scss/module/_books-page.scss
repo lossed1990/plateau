@@ -1,0 +1,95 @@
+#gy_books {
+  float: left;
+  width: 100%;
+}
+
+.gy-selectworkspace-div {
+  position: fixed;
+  margin: auto;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 240px;
+  height: 200px;
+  text-align: center;
+  .el-button {
+    font-size: 22px;
+    color: $mainMenuBarFontColor;
+    background-color: $mainMenuBarBgColor;
+    border-color: $mainMenuBarBgColor;
+    &:hover {
+      background-color: lighten($mainMenuBarBgColor, 5%);
+      border-color: lighten($mainMenuBarBgColor, 5%);
+    }
+  }
+  p {
+    font-size: 13px;
+    color: $headerFontColor;
+  }
+}
+
+.gy-bookbox-div,
+.gy-boxname-input {
+  font-size: 22px;
+}
+
+.gy-bookbox-topbar {
+  background-color: darken($mainBgColor, 3%);
+  width: 100%;
+  span {
+    margin-left: 6px;
+    color: $headerFontColor;
+  }
+  .el-button {
+    float: right;
+    margin-left: 4px;
+  }
+}
+
+.gy-bookinfo-div {
+  border: 1px solid $mainBgColor;
+  display: inline-block;
+  margin: 8px;
+  padding: 10px;
+  width: 80px;
+  position: relative;
+  &:hover {
+    border: 1px solid darken($mainBgColor, 10%);
+    cursor: pointer;
+  }
+  img {
+    width: 80px;
+    height: 80px;
+  }
+  .el-button {
+    position: absolute;
+    right: 0px;
+    top: 0px;
+  }
+}
+
+.gy-bookname-input {
+  width: 76px;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.gy-boxname-input[readonly],
+.gy-bookname-input[readonly] {
+  border: 0px;
+  outline: none;
+  cursor: pointer;
+  user-select: none;
+  color: $headerFontColor;
+}
+
+.gy-boxname-input[readonly] {
+  background-color: darken($mainBgColor, 3%);
+}
+
+.gy-bookname-input[readonly] {
+  background-color: $mainBgColor;
+}

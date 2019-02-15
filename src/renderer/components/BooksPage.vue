@@ -10,6 +10,7 @@
 </template>
 
 <script>
+  import '../assets/scss/books-page.scss'
   import { mapState } from 'vuex'
   const _configHelper = require('../scripts/bookmanager.js')
 
@@ -354,108 +355,3 @@
     })
   }
 </script>
-
-<style>
-  #gy_books {
-    float: left;
-    width: 100%;
-  }
-
-  .gy-selectworkspace-div {
-    position: fixed;
-    margin: auto;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 240px;
-    height: 200px;
-    text-align: center;
-  }
-
-  .gy-selectworkspace-div .el-button {
-    font-size: 22px;
-  }
-  
-  .gy-selectworkspace-div p {
-    font-size: 13px;
-    color: #C0C4CC;
-  }
-
-  .gy-bookbox-div,
-  .gy-boxname-input {
-    font-size: 22px;
-  }
-        
-  .gy-bookbox-topbar {
-    background-color: rgb(235, 238, 240);
-    width: 100%;
-  }
-
-  .gy-bookbox-topbar span{
-    margin-left: 6px;
-  }
-        
-  .gy-bookbox-topbar .el-button {
-    float: right;
-    margin-left: 4px;
-  }
-        
-  .gy-bookinfo-div {
-    border: 1px solid #FFF;
-    display: inline-block;
-    margin: 8px;
-    padding: 10px;
-    width: 80px;
-    position: relative;
-  }
-  
-  .gy-bookinfo-div:hover {
-    border: 1px solid rgb(235, 238, 240);
-    cursor: pointer;
-  }
-  
-  .gy-bookinfo-div img {
-    width: 80px;
-    height: 80px;
-  }
-  
-  .gy-bookinfo-div .el-button {
-    position: absolute;
-    right: 0px;
-    top: 0px;
-  }
-  
-  .gy-bookname-input {
-    width: 76px;
-    text-align: center;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
-  
-  .gy-boxname-input[readonly],
-  .gy-bookname-input[readonly] {
-    border: 0px;
-    outline: none;
-    cursor: pointer;
-    user-select: none;
-  }
-  
-  .gy-boxname-input[readonly] {
-    background-color: rgb(235, 238, 240);
-  }
-  
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 10px;
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background-color: rgb(212, 213, 214);
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background-color: rgb(212, 213, 214);
-  }
-</style>

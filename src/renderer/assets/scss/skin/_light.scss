@@ -1,0 +1,28 @@
+//======== light风格样式 ========
+/**
+ * 通用背景颜色
+ */
+// 主背景颜色
+$mainBgColor: white;
+// 左侧工具菜单栏背景颜色
+$mainMenuBarBgColor: #409eff;
+
+/**
+ * 通用字体颜色
+ */
+// 默认字体颜色
+$mainFontColor: black;
+// 左侧工具菜单栏字体颜色
+$mainMenuBarFontColor: white;
+// 标题栏字体颜色
+$headerFontColor: rgb(72, 72, 72);
+
+/**
+ * Markdown预览风格
+ */
+// 代码标签预览背景颜色
+$codePreviewBkColor: #f6f8fa;
+// a标签预览字体颜色
+$aPreviewFontColor: #268bd2;
+// 引用标签预览字体颜色
+$blockquotePreviewFontColor: #749900;

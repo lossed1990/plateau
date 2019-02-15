@@ -4,15 +4,11 @@ import axios from 'axios'
 import Element from 'element-ui'
 import VueCodeMirror from 'vue-codemirror'
 import 'font-awesome/css/font-awesome.min.css'
-import 'github-markdown-css/github-markdown.css'
 import 'katex/dist/katex.min.css'
 import 'element-ui/lib/theme-chalk/index.css'
 import './assets/icon/iconfont.css'
 import 'vue-codemirror/node_modules/codemirror/lib/codemirror.css'
 import '../config/style.css'
-// 皮肤风格
-import '../config/default.skin.css'
-// import '../config/dark.skin.scss'
 // icon图标 后期统一扩展 https://blog.csdn.net/b376924098/article/details/78286880
 
 import App from './App'

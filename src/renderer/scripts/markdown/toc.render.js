@@ -21,9 +21,9 @@ TOCRenderer.prototype.init = function () {
  * 解析标题
  */
 TOCRenderer.prototype.headRender = function (text, level, line) {
-  var anchor = `#toc${level}${++_index}`
+  var anchor = `anchor-toc${level}${++_index}`
   _toc.push({anchor: anchor, level: level, text: text})
-  return `<a id=${anchor} class="anchor-fix"></a><h${level} source-line="${line}">${text}</h${level}>\n`
+  return `<h${level} source-line="${line}">${text}<a id=${anchor} class="anchor-fix fa fa-gg" href="#${anchor}"></a></h${level}>\n`
 }
 
 /**
@@ -52,7 +52,7 @@ TOCRenderer.prototype.getToc = function () {
     return ''
   }
 
-  let result = '<ul>'
+  let result = '<ul class="gy-toc-ui">'
   _toc.forEach(function (item) {
     let space = '&nbsp;&nbsp;&nbsp;&nbsp;'.repeat(item.level - 1)
     result += `<li class="gy-toc-li" style="list-style: none;"><a href="#${item.anchor}">${space + item.text}<a></li>\n`

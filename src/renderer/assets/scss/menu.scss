@@ -1,0 +1,11 @@
+body[theme="dark"] {
+  @import 'skin/dark';
+  @import 'base/base';
+  @import 'module/menu';
+}
+
+body[theme="light"] {
+  @import 'skin/light';
+  @import 'base/base';
+  @import 'module/menu';
+}

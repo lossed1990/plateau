@@ -7,6 +7,8 @@
 </template>
 
 <script>
+  import '../../assets/scss/menu.scss'
+
   export default {
     props: ['menus'],
     data () {
@@ -29,46 +31,3 @@
     }
   }
 </script>
-
-<style scoped>
-  .gy-menu {
-    position: fixed;
-    top: 200px;
-    left: 140px;
-    width: auto;
-    min-width: 180px;
-    z-index: 9999;
-    border: 1px solid rgba(0,0,0,.15);
-    border-radius: 4px;
-    box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
-    background-clip: padding-box;
-    list-style-type: none;
-    margin: 0;
-    padding: 4px 0px 4px 0px;
-    background-color: white;
-  }
-
-  .gy-menu-item {
-    list-style-type: none;
-    font-family: "Segoe UI", "Arial", sans-serif;
-    font-size: 12px;
-    padding: 4px 4px 4px 24px;
-    cursor: default;
-  }
-
-  .gy-menu-item:hover {
-    background-color: rgb(238,238,238);
-  }
-
-  .gy-menu-item-separation {
-    padding: 0px 0px 0px 0px;
-    margin: 4px 0px 4px 0px;
-    height:1px;
-    background-color: rgb(237,237,237);
-  }
-
-  .gy-menu-item-separation:hover {
-    background-color: rgb(237,237,237);
-  }
-</style>

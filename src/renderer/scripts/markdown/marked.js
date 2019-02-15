@@ -191,7 +191,6 @@ Lexer.prototype.token = function(src, top, isRoot) {
   if (isRoot) {
     var arrayTotalLines = src.match(/\n/g);
     totalLinesCount = arrayTotalLines ? arrayTotalLines.length + 1 : 1;
-    console.log('source total line count', totalLinesCount);
   }
 
   var next,
@@ -225,9 +224,7 @@ Lexer.prototype.token = function(src, top, isRoot) {
     if (isRoot) {
       var arrayRemainLines = src.match(/\n/g);
       var remainLinesCount = arrayRemainLines ? arrayRemainLines.length : 0;
-      nextSourceLine = totalLinesCount - remainLinesCount; 
-      console.log('source nextSourceLine', nextSourceLine);
-      console.log('source nextSourceLine', top);
+      nextSourceLine = totalLinesCount - remainLinesCount;
     }
     
     // code
