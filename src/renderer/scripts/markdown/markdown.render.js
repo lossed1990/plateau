@@ -129,7 +129,6 @@ MarkdownRenderer.prototype.replaceToc = function (text) {
 
   let isToc = /<p source-line="[0-9]*">\[TOC\]<\/p>/.test(text)
   if (isToc) {
-    console.log('isToc', _tocRenderer.getToc())
     text = text.replace(/<p source-line="[0-9]*">\[TOC\]<\/p>/g, _tocRenderer.getToc())
   }
   return text

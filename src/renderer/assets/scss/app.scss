@@ -1,13 +1,37 @@
 @import 'base/common';
 
+body[theme="brown"] {
+  @import 'skin/brown';
+  @import 'base/base';
+  @import 'module/app';
+}
+
 body[theme="dark"] {
   @import 'skin/dark';
   @import 'base/base';
   @import 'module/app';
 }
 
+body[theme="default"] {
+  @import 'skin/default';
+  @import 'base/base';
+  @import 'module/app';
+}
+
 body[theme="light"] {
   @import 'skin/light';
+  @import 'base/base';
+  @import 'module/app';
+}
+
+body[theme="purple"] {
+  @import 'skin/purple';
+  @import 'base/base';
+  @import 'module/app';
+}
+
+body[theme="yellow"] {
+  @import 'skin/yellow';
   @import 'base/base';
   @import 'module/app';
 }

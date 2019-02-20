@@ -10,6 +10,7 @@ import './assets/icon/iconfont.css'
 import 'vue-codemirror/node_modules/codemirror/lib/codemirror.css'
 import '../config/style.css'
 // icon图标 后期统一扩展 https://blog.csdn.net/b376924098/article/details/78286880
+// import './assets/scss/base/element-variables.scss'
 
 import App from './App'
 import router from './router'

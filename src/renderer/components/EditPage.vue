@@ -273,6 +273,7 @@
           self.arrayScrollFlags.push(info)
         }
       })
+      console.log('createArrayScrollFlags', this.arrayScrollFlags)
     },
     components: {
       'gy-edit-filelistbar': ComponentFileListBar,
@@ -304,6 +305,7 @@
               for (let i = 0, len = self.arrayScrollFlags[indexFlag].sourceLine - 1; i < len; ++i) {
                 totalHeight += self.codemirror.getLineHandle(i).height
               }
+              console.log('set codemirror scroll>>currentLine:' + self.arrayScrollFlags[indexFlag].sourceLine + ';totalHeight:' + totalHeight, indexFlag)
               self.codemirror.scrollTo(0, totalHeight)
             }
           }
@@ -453,6 +455,7 @@
 
           let indexFlag = this.arrayScrollFlags.findIndex((item) => item.sourceLine >= (currentLine + 1))
           if (indexFlag !== -1) {
+            console.log('set preview scroll>>currentLine:' + this.arrayScrollFlags[indexFlag].sourceLine + ';previewScrollTop:' + this.arrayScrollFlags[indexFlag].previewScrollTop, indexFlag)
             document.querySelector('.gy-edit-preview').scrollTop = this.arrayScrollFlags[indexFlag].previewScrollTop
           }
         } catch (e) {

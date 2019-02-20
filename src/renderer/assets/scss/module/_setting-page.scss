@@ -1,0 +1,40 @@
+.gy-setting {
+  .el-form-item__label {
+    font-weight: bold;
+  }
+  // .el-select {
+  //   border-color: red;
+  // }
+  // .selected {
+  //   color:red;
+  // }
+
+}
+
+.el-select-dropdown {
+  background-color:changeColorByLightness($mainBgColor, 2%);
+  border: 1px solid changeColorByLightness($mainBgColor, 7%);
+}
+
+.el-select-dropdown .popper__arrow {
+  border-top-color: changeColorByLightness($mainBgColor, 7%);
+}
+.el-select-dropdown .popper__arrow:after {
+  border-top-color: changeColorByLightness($mainBgColor, 7%);
+}
+
+.el-popper[x-placement^=bottom] .popper__arrow {
+  border-bottom-color: changeColorByLightness($mainBgColor, 7%);
+}
+
+.el-popper[x-placement^=bottom] .popper__arrow::after {
+  border-bottom-color: changeColorByLightness($mainBgColor, 7%);
+}
+
+.el-select-dropdown__item.selected {
+  color: $headerFontColor;
+}
+
+.el-select-dropdown__item.hover {
+  background-color:changeColorByLightness($mainBgColor, 7%);
+}

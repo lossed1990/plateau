@@ -1,21 +1,21 @@
-//======== dark风格样式 ========
+//======== brown风格样式 ========
 /**
  * 通用背景颜色
  */
 // 主背景颜色
-$mainBgColor: #002b36;
+$mainBgColor: rgb(54,49,45);
 // 左侧工具菜单栏背景颜色
-$mainMenuBarBgColor: #003847;
+$mainMenuBarBgColor: rgb(53,53,53);
 
 /**
  * 通用字体颜色
  */
 // 默认字体颜色
-$mainFontColor: black;
+$mainFontColor: rgb(235,209,185);
 // 左侧工具菜单栏字体颜色
-$mainMenuBarFontColor: white;
+$mainMenuBarFontColor: rgb(174,174,174);
 // 标题栏字体颜色
-$headerFontColor: rgb(187, 187, 187);
+$headerFontColor: rgb(235,209,185);
 
 /**
  * Markdown预览风格
@@ -28,6 +28,6 @@ $aPreviewFontColor: #268bd2;
 $blockquotePreviewFontColor: #749900;
 
 /* 改变element-ui主题色变量 */
-// $--color-primary: #003847;
+// $--color-primary: rgb(53,53,53);
 // $--font-path: '~element-ui/lib/theme-chalk/fonts';
 // @import "~element-ui/packages/theme-chalk/src/index";

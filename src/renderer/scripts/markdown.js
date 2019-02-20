@@ -9,7 +9,7 @@ let _workSpace = ''
 function initMarkdown () {
   let markedRenderer = new marked.Renderer()
 
-  markedRenderer.heading = function (text, level, raw, line) {
+  markedRenderer.heading = function (text, level, raw, slugger, line) {
     return _markdownRenderer.head(text, level, line)
   }
 

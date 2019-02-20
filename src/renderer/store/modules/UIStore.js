@@ -2,7 +2,8 @@ const state = {
   leftToolBarWidth: 66,
   fileListBarWidth: 200,
   showStatusBar: false,
-  showFileListBar: true
+  showFileListBar: true,
+  theme: 'default'
 }
 
 const mutations = {
@@ -17,6 +18,9 @@ const mutations = {
   },
   SET_SHOW_FILELIST_BAR (state, bShow) {
     state.showFileListBar = bShow
+  },
+  SET_THEME (state, theme) {
+    state.theme = theme
   }
 }
 
@@ -32,6 +36,9 @@ const actions = {
   },
   showFileListBar ({ commit }, bShow) {
     commit('SET_SHOW_FILELIST_BAR', bShow)
+  },
+  setTheme ({ commit }, theme) {
+    commit('SET_THEME', theme)
   }
 }
 

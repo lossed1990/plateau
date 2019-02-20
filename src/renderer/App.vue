@@ -69,14 +69,14 @@
     methods: {
       minimizeWindow () {
         // console.log('onMinimize')
-        // this.$electron.remote.getCurrentWindow().minimize()
+        this.$electron.remote.getCurrentWindow().minimize()
 
         // 换肤测试代码
-        if (document.body.getAttribute('theme') === 'light') {
-          document.body.setAttribute('theme', 'dark')
-        } else {
-          document.body.setAttribute('theme', 'light')
-        }
+        // if (document.body.getAttribute('theme') === 'light') {
+        //   document.body.setAttribute('theme', 'dark')
+        // } else {
+        //   document.body.setAttribute('theme', 'light')
+        // }
       },
       maximizeWindow () {
         console.log('onMaximize')
